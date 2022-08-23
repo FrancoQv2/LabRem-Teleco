@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lentes Divergentes</title>
+
+    <link rel="stylesheet" href="assets/bootstrap.min.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" disabled>
+                <img src="http://grupomontevideo.org/sitio/wp-content/uploads/2015/12/unt.png" alt="" width="60"
+                    height="30" class="d-inline-block align-text-top">
+                Laboratorios Remotos
+            </a>
+            <div class="d-flex" id="usuario">
+                <a class="nav-link ms-auto disabled" id="usuario-nombre">
+                    Franco Quevedo
+                </a>
+                <img src="https://cdn-icons.flaticon.com/png/512/1144/premium/1144760.png?token=exp=1656347228~hmac=cd389b94adc461cb3d1465192ba37a8a"
+                    alt="" height="30" class="d-inline-block align-text-top">
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4 border border-dark rounded">
+        <div class="container-md mt-4" id="info-lab">
+            <h3 id="lab-area"></h3>
+            <hr>
+            <h4 id="lab-titulo"></h4>
+            <hr>
+            <div class="accordion" id="lab-marco-teorico"></div>
+        </div>
+        <hr>
+
+        <form class="container mb-4" id="lab-formulario" name="lab-formulario" method="post">
+            <div class="row">
+                <div class="col-lg-6 col-sm-12 d-flex justify-content-center">
+                    <img src="https://us.123rf.com/450wm/mixov/mixov1401/mixov140100050/25513004-vector-eps10-icono-del-reproductor-de-v%C3%ADdeo-dise%C3%B1o-plano.jpg?ver=6"
+                        class="img-thumbnail border">
+                    <!-- <video id="video" playsinline autoplay class="img-thumbnail border"></video> -->
+                </div>
+                <div class="col-lg-6 col-sm-12">
+                    <div class="row row-cols-3 input-group my-3">
+                        <span class="col-md-4 input-group-text" for="dist-convergente">Distancia Lente Converg:</span>
+                        <input required type="number" class="form-control" id="dist-convergente"
+                            name="dist-convergente">
+                        <span class="col-1 input-group-text justify-content-center">[mm]</span>
+                    </div>
+
+                    <div class="row row-cols-3 input-group my-3">
+                        <span class="col-md-4 input-group-text" for="dist-divergente">Distancia Lente Diverg:</span>
+                        <input required type="number" class="form-control" id="dist-divergente" name="dist-divergente">
+                        <span class="col-1 input-group-text justify-content-center">[mm]</span>
+                    </div>
+
+                    <div class="row row-cols-3 input-group my-3">
+                        <span class="col-md-4 input-group-text" for="dist-pantalla">Distancia Pantalla:</span>
+                        <input required type="number" class="form-control" id="dist-pantalla" name="dist-pantalla">
+                        <span class="col-1 input-group-text justify-content-center">[mm]</span>
+                    </div>
+
+                    <div class="row row-cols-1 my-3 mx-1">
+                        <div class="my-3 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Iniciar experiencia</button>
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script type="module" src="js/EnlaceRadio.js"></script>
+    <script src="assets/bootstrap.bundle.min.js"></script>
+    <!-- <script src="../../js/camara.js"></script> -->
+</body>
+
+</html>
