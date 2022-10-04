@@ -2,14 +2,21 @@ FROM node:18.7.0
 
 WORKDIR /usr/src/server
 
-ENV SERVER_PORT=3005
-ENV DB_HOST=mysqldb
+# Debe hacer referencia al puerto dentro del container
+ENV SERVER_PORT=3000
+ENV LOCALHOST_PORT=3030
+
+ENV DB_HOST=db
 ENV DB_DIALECT=mysql
+
 ENV DB_USER=root
 ENV DB_PASSWORD=123456
 ENV DB_PORT=3306
+
 ENV DB_NAME=LabRem_Teleco
 
-EXPOSE 3005
+RUN npm install -g nodemon
+
+EXPOSE 3000
 
 CMD npm run dev

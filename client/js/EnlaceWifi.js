@@ -26,7 +26,7 @@ getInfoLabWifi()
                                     alt="lentes-elevacions">
                             </figure>
                         </div>
-                        <div class="col col-sm-auto>
+                        <div class="col col-sm-auto">
                           <p id="lab-descripcion">${data.descripcion}</p>
                         </div>
                     </div>

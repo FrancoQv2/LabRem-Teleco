@@ -1,4 +1,4 @@
-const URI_API = "http://localhost:3000/api/teleco"
+const URI_API = "http://localhost:3030/api/teleco"
 
 async function getInfoLabWifi() {
   const response = await fetch(`${URI_API}/wifi`);

@@ -6,13 +6,14 @@
 
 # docker compose stop
 
-docker compose down --volumes
-
-
 # sudo rm -rf /home/francoq/labrem/volumenes/teleco-db/*
-
-docker rmi teleco_server:latest teleco_client:latest
 
 # docker rmi $(docker images -aq)
 
+# docker rmi teleco-server:latest teleco-client:latest
+
+# alias recompose-teleco='/home/francoq/labrem/teleco/scripts/recompose.sh && /home/francoq/labrem/teleco/scripts/create-db.sh'
+
+docker compose down --volumes
+docker rmi teleco-server:latest
 docker compose up

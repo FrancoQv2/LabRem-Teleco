@@ -5,11 +5,14 @@
 
 IMAGE_NAME=dev-server
 CONTAINER_NAME=dev-server
-NETWORK_NAME=teleco_local
+NETWORK_NAME=labrem-net
 
-# docker rm -f $CONTAINER_NAME
-# docker rmi $IMAGE_NAME
+docker rm -f $CONTAINER_NAME
+docker rmi $IMAGE_NAME
 
 docker build -f server/Dockerfile.dev -t $IMAGE_NAME server
 
-docker run -ti --name $CONTAINER_NAME -v $(pwd)/server:/usr/src/server -p 3005:3005 --network $NETWORK_NAME $IMAGE_NAME
+docker run -ti --name $CONTAINER_NAME -v $(pwd)/server:/usr/src/server -p 3030:3000 --network $NETWORK_NAME $IMAGE_NAME
+
+# docker build -f server/Dockerfile.dev -t dev-server:latest server
+# docker run -ti --name dev-server -v $(pwd)/server:/usr/src/server -p 3030:3000 --network labrem-net dev-server:latest

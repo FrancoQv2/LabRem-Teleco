@@ -39,6 +39,19 @@ services:
       labrem:
         aliases:
           - teleco-server
+  client:
+    depends_on:
+      - server
+    container_name: teleco-client
+    build: ./client
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - $CLIENT_LOCAL_PORT:$CLIENT_DOCKER_PORT
+    networks:
+      labrem:
+        aliases:
+          - labrem-client
 networks:
   labrem:
     name: labrem-net

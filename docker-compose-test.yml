@@ -19,12 +19,12 @@ services:
   server:
     depends_on:
       - db
-    container_name: teleco-server
+    container_name: teleco-server-dev
     build: ./server
     restart: unless-stopped
     env_file: ./.env
     ports:
-      - $SERVER_LOCAL_PORT:$SERVER_DOCKER_PORT
+      - $SERVER_LOCAL_TEST_PORT:$SERVER_DOCKER_PORT
     environment:
       - DB_HOST=$DB_HOST
       - DB_DIALECT=$DB_DIALECT
@@ -35,10 +35,12 @@ services:
       - DB_PORT=$MYSQLDB_DOCKER_PORT
     stdin_open: true
     tty: true
+    volumes:
+      - ./src:/usr/src
     networks:
       labrem:
         aliases:
-          - teleco-server
+          - teleco-server-dev
 networks:
   labrem:
     name: labrem-net

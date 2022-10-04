@@ -1,4 +1,6 @@
 import * as dotenv from "dotenv";
+// Toma las variables configuradas por ENV dentro del docker-compose / dockerfile
+// dotenv.config({ path: './.env'});
 dotenv.config();
 
 import expressServer from "express";
@@ -7,10 +9,10 @@ import morgan from "morgan";
 import cors from "cors";
 import Sequelize from "sequelize";
 
-import telecoRouter from "./routes/routes.js";
+import telecoRouter from "./routes/teleco.routes.js";
 
 const app = expressServer();
-const PORT = process.env.SERVER_PORT || 3005;
+const PORT = process.env.SERVER_PORT || 3000;
 
 //Necesitamos body-parser para formatear los post en express
 app.use(morgan("dev"));
@@ -24,8 +26,9 @@ app.use("/api/teleco", telecoRouter);
 
 // Levantamos el servidor para que escuche peticiones
 app.listen(PORT, () => {
-  console.log(`Server on port ${PORT}`);
-  console.log("Wenas");
+  console.log(`Server on container port ${PORT}`);
+  console.log(`Server on localhost port ${process.env.LOCALHOST_PORT}`);
+  console.log("----------------------");
 });
 
 export const sequelize = new Sequelize(
@@ -35,6 +38,6 @@ export const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: process.env.DB_DIALECT,
+    dialect: process.env.DB_DIALECT
   }
 );

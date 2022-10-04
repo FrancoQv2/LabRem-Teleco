@@ -1,0 +1,22 @@
+USE LabRem_Teleco;
+
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 3, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 4, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 2, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 5, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 2, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 4, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 5, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 1, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 1, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 4, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 2, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 4, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 2, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 3, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 5, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 5, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 5, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 1, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 5, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
+INSERT INTO Ensayos (idEnsayo, idUsuario, fechaHora, datosEntrada, datosSalida, idLaboratorio) VALUES (DEFAULT, 5, DEFAULT, '{"rangoAzimut": 40, "rangoElevacion": 25}', '{"rangoAzimut": 40, "rangoElevacion": 15}',1);
