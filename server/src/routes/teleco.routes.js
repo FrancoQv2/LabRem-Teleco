@@ -3,9 +3,9 @@ import { telecoController } from "../controllers/teleco.controller.js";
 import { radioController } from "../controllers/radio.controller.js";
 import { wifiController } from "../controllers/wifi.controller.js";
 
-const { getLaboratorios, getLaboratorioById } = telecoController;
+const { getLaboratorios, getLaboratorioById, getEnsayosUsuario } = telecoController;
 const { postLabRadio, getEnsayosRadio } = radioController;
-const { postLabWifi, getEnsayosWifi, getEnsayosUsuario } = wifiController;
+const { postLabWifi, getEnsayosWifi } = wifiController;
 
 const telecoRouter = express.Router();
 
@@ -30,6 +30,8 @@ telecoRouter.route("/:idLaboratorio").get(getLaboratorioById);
 telecoRouter.route("/wifi/:idUsuario").get(getEnsayosUsuario);
 
 telecoRouter.route("/radio/:idUsuario").get(getEnsayosUsuario);
+
+telecoRouter.route("/:idLaboratorio/:idUsuario").get(getEnsayosUsuario);
 
 
 export default telecoRouter;
