@@ -11,14 +11,20 @@
 # Para entrar a mysql desde el container
 # mysql -u root -p
 
-FILE_CREATION=LabRem_Teleco
-FILE_INSERTS=LabRem_Teleco_inserts
+FILE_CREATION=db-teleco
+FILE_INSERTS=db-teleco-inserts
+FILE_SP=db-teleco-sp
+
 CONTAINER_NAME=teleco-db
 
 DB_USER=root
 DB_PASSWORD=123456
 DB_NAME=LabRem_Teleco
 
-cat $(pwd)/database/$FILE_CREATION.sql | docker exec -i $CONTAINER_NAME mysql -u $DB_USER --password=$DB_PASSWORD $DB_NAME
 
+
+
+# -----------
+cat $(pwd)/database/$FILE_CREATION.sql | docker exec -i $CONTAINER_NAME mysql -u $DB_USER --password=$DB_PASSWORD $DB_NAME
 cat $(pwd)/database/$FILE_INSERTS.sql | docker exec -i $CONTAINER_NAME mysql -u $DB_USER --password=$DB_PASSWORD $DB_NAME
+cat $(pwd)/database/$FILE_SP.sql | docker exec -i $CONTAINER_NAME mysql -u $DB_USER --password=$DB_PASSWORD $DB_NAME

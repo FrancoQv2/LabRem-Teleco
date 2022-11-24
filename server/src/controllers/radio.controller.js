@@ -1,50 +1,105 @@
 import { sequelize } from "../index.js";
 import { QueryTypes } from "sequelize";
 
+const idLaboratorio = 2;
+
 const radioController = {};
 
-// ------------------------------------------------------
+/**
+ * @return {array} todos los ensayos realizados para el laboratorio de Radio
+ */
+ radioController.getEnsayosRadio = async (req, res) => {
+  console.log(req.params);
 
-radioController.getInfoLabRadio = async (req, res) => {
   const response = await sequelize.query(
-    "SELECT * FROM Laboratorios WHERE nombre = 'Enlace punto a punto con radio definida por software';",
+    "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
     {
+      replacements: {
+        idLaboratorio: idLaboratorio
+      },
       type: QueryTypes.SELECT,
     }
   );
-  const data = await JSON.stringify(response[0]);
-  await res.send(data);
+
+  console.log(response);
+  
+  let dataParsed = [];
+  response.map((ensayo)=>{
+    const newEnsayo = {}
+    newEnsayo.Usuario = ensayo.idUsuario
+    newEnsayo.Fecha = ensayo.Fecha
+    newEnsayo.Hora = ensayo.Hora
+    newEnsayo.intensidadMin = ensayo.datosEntrada.intensidadMin
+    newEnsayo.intensidadMax = ensayo.datosEntrada.intensidadMax
+    newEnsayo.tipoModulacion = ensayo.datosEntrada.tipoModulacion
+    newEnsayo.tipoCodificacion = ensayo.datosEntrada.tipoCodificacion
+    dataParsed.push(newEnsayo)
+  })
+  
+  console.log(dataParsed);
+  await res.send(dataParsed);
 };
 
-// ------------------------------------------------------
-
-radioController.postLabRadio = (req, res) => {
-  console.log(req.body);
+/**
+ * -----------------------------------------------------
+ * Function - postLabRadio
+ * -----------------------------------------------------
+ */
+ radioController.postLabRadio = (req, res) => {
   const {
     idUsuario,
-    distanciaLenteConvergente,
-    distanciaLenteDivergente,
-    distanciaPantalla,
+    tipoModulacion,
+    tipoCodificacion,
+    intensidadMin,
+    intensidadMax,
   } = req.body;
 
-  if (distanciaLenteConvergente < 0 || distanciaLenteConvergente > 700) {
-    res.status(400).json("Distancia al objeto incorrecta");
-  } else if (distanciaLenteDivergente < 0 || distanciaLenteDivergente > 700) {
-    res.status(400).json("Distancia a la pantalla incorrecta");
-  } else if (distanciaPantalla < 0 || distanciaPantalla > 900) {
-    res.status(400).json("Distancia a la pantalla incorrecta");
+  if (
+    tipoModulacion != "4-QAM" ||
+    tipoModulacion != "8-QAM" ||
+    tipoModulacion != "16-QAM" ||
+    tipoModulacion != "PSK" ||
+    tipoModulacion != "FSK" ||
+    tipoModulacion != "QPSK"
+  ) {
+    res.status(400).json("Tipo de Modulacion Incorrecta");
+  } else if (
+    tipoCodificacion != 1 ||
+    tipoCodificacion != 2 ||
+    tipoCodificacion != 3
+  ) {
+    res
+      .status(400)
+      .json("El Tipo de Codificación no es ni analógico ni digital");
+  } else if (intensidadMax < intensidadMin) {
+    res.status(400).json("El rango mínimo supera al rango máximo");
+  } else if (
+    intensidadMin != 10 ||
+    intensidadMin != 15 ||
+    intensidadMin != 20 ||
+    intensidadMin != 25
+  ) {
+    res.status(400).json("La Intensidad Mínima no es válida");
+  } else if (
+    intensidadMax != 50 ||
+    intensidadMax != 80 ||
+    intensidadMax != 100 ||
+    intensidadMax != 120
+  ) {
+    res.status(400).json("La Intensidad Máxima no es válida");
   } else {
     const datosEntrada = {
-      distanciaLenteConvergente: distanciaLenteConvergente,
-      distanciaLenteDivergente: distanciaLenteDivergente,
-      distanciaPantalla: distanciaPantalla,
+      tipoModulacion: tipoModulacion,
+      tipoCodificacion: tipoCodificacion,
+      intensidadMax: intensidadMax,
+      intensidadMin: intensidadMin,
     };
+
     const datosSalida = {
-      distanciaEntreLentes:
-        distanciaLenteDivergente - distanciaLenteConvergente,
-      distanciaPantallaLenteDivergente:
-        distanciaPantalla - distanciaLenteDivergente,
+      intensidad: 10, // dBm
+      tasaError: 0.05, // cantidad de bits con error / bits transmitidos
     };
+
     try {
       sequelize.query(
         "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
@@ -53,7 +108,7 @@ radioController.postLabRadio = (req, res) => {
             idUsuario: idUsuario,
             datosEntrada: JSON.stringify(datosEntrada),
             datosSalida: JSON.stringify(datosSalida),
-            idLaboratorio: 2,
+            idLaboratorio: idLaboratorio,
           },
           type: QueryTypes.INSERT,
         }

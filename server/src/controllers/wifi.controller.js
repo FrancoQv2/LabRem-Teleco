@@ -1,6 +1,8 @@
 import { sequelize } from "../index.js";
 import { QueryTypes } from "sequelize";
 
+const idLaboratorio = 1;
+
 const wifiController = {};
 
 /**
@@ -13,7 +15,7 @@ wifiController.getEnsayosWifi = async (req, res) => {
     "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
     {
       replacements: {
-        idLaboratorio: 1
+        idLaboratorio: idLaboratorio
       },
       type: QueryTypes.SELECT,
     }
@@ -101,7 +103,7 @@ wifiController.postLabWifi = (req, res) => {
             idUsuario: idUsuario,
             datosEntrada: JSON.stringify(datosEntrada),
             datosSalida: JSON.stringify(datosSalida),
-            idLaboratorio: 1,
+            idLaboratorio: idLaboratorio,
           },
           type: QueryTypes.INSERT,
         }

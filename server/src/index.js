@@ -22,6 +22,8 @@ app.use(cors());
 
 app.use("/api/teleco", telecoRouter);
 
+// app.use("/public-key", "id_rsa.pub") // formato x.509
+
 // ---------------------------------------------------------------
 
 // Levantamos el servidor para que escuche peticiones
