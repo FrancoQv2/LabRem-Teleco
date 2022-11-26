@@ -27,10 +27,6 @@ telecoRouter.route("/radio").get(getEnsayosRadio).post(postLabRadio);
  */
 telecoRouter.route("/:idLaboratorio").get(getLaboratorioById);
 
-telecoRouter.route("/wifi/:idUsuario").get(getEnsayosUsuario);
-
-telecoRouter.route("/radio/:idUsuario").get(getEnsayosUsuario);
-
 telecoRouter.route("/:idLaboratorio/:idUsuario").get(getEnsayosUsuario);
 
 
