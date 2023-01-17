@@ -51,7 +51,14 @@ telecoController.getEnsayosUsuario = async (req, res) => {
   const { idLaboratorio, idUsuario } = req.params;
   
   const response = await sequelize.query(
-    "SELECT DATE(fechaHora) AS Fecha, TIME(CONVERT_TZ(fechaHora, '+00:00', '-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio AND idUsuario = :idUsuario;",
+    "\
+    SELECT \
+      DATE_FORMAT(fechaHora,'%d/%m/%y') AS Fecha, \
+      TIME(CONVERT_TZ(fechaHora, '+00:00', '-03:00')) AS Hora, \
+      datosEntrada, \
+      datosSalida \
+    FROM Ensayos \
+    WHERE idLaboratorio = :idLaboratorio AND idUsuario = :idUsuario;",
     {
       replacements: {
         idLaboratorio: idLaboratorio,
