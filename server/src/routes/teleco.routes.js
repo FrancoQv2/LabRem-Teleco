@@ -3,9 +3,9 @@ import { telecoController } from "../controllers/teleco.controller.js";
 import { radioController } from "../controllers/radio.controller.js";
 import { wifiController } from "../controllers/wifi.controller.js";
 
-const { getLaboratorios, getLaboratorioById, getEnsayosUsuario } = telecoController;
-const { postLabRadio, getEnsayosRadio } = radioController;
-const { postLabWifi, getEnsayosWifi } = wifiController;
+const { getLaboratorios, postLaboratorio, getLaboratorioById, getEnsayosUsuario } = telecoController;
+const { postEnsayoRadio, getEnsayosRadio } = radioController;
+const { postEnsayoWifi, getEnsayosWifi } = wifiController;
 
 const telecoRouter = express.Router();
 
@@ -14,20 +14,28 @@ const telecoRouter = express.Router();
  * Rutas - Laboratorios de Telecomunicaciones
  * -----------------------------------------------------
  */
-telecoRouter.route("/").get(getLaboratorios);
+telecoRouter.route("/")
+    .get(getLaboratorios)
+    .post(postLaboratorio);
 
-telecoRouter.route("/wifi").get(getEnsayosWifi).post(postLabWifi);
+telecoRouter.route("/wifi")
+    .get(getEnsayosWifi)
+    .post(postEnsayoWifi);
 
-telecoRouter.route("/radio").get(getEnsayosRadio).post(postLabRadio);
+telecoRouter.route("/radio")
+    .get(getEnsayosRadio)
+    .post(postEnsayoRadio);
 
 /**
  * -----------------------------------------------------
  * Rutas con pasaje de parametro en la URL
  * -----------------------------------------------------
  */
-telecoRouter.route("/:idLaboratorio").get(getLaboratorioById);
+telecoRouter.route("/:idLaboratorio")
+    .get(getLaboratorioById);
 
-telecoRouter.route("/:idLaboratorio/:idUsuario").get(getEnsayosUsuario);
+telecoRouter.route("/:idLaboratorio/:idUsuario")
+    .get(getEnsayosUsuario);
 
 
 export default telecoRouter;

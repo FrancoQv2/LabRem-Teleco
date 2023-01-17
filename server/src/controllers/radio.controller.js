@@ -42,10 +42,10 @@ const radioController = {};
 
 /**
  * -----------------------------------------------------
- * Function - postLabRadio
+ * Function - postEnsayoRadio
  * -----------------------------------------------------
  */
- radioController.postLabRadio = (req, res) => {
+ radioController.postEnsayoRadio = (req, res) => {
   const {
     idUsuario,
     tipoModulacion,
@@ -119,7 +119,7 @@ const radioController = {};
       );
       res.status(200).json("Parámetros correctos");
     } catch (error) {
-      console.error("-> ERROR postLabRadio:", error);
+      console.error("-> ERROR postEnsayoRadio:", error);
     }
   }
 };

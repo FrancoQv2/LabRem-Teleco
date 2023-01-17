@@ -12,7 +12,7 @@ wifiController.getEnsayosWifi = async (req, res) => {
   console.log(req.params);
 
   const response = await sequelize.query(
-    "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
+    "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(CONVERT_TZ(fechaHora, '+00:00', '-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
     {
       replacements: {
         idLaboratorio: idLaboratorio
@@ -20,8 +20,6 @@ wifiController.getEnsayosWifi = async (req, res) => {
       type: QueryTypes.SELECT,
     }
   );
-
-  console.log(response);
   
   let dataParsed = [];
   response.map((ensayo)=>{
@@ -41,10 +39,10 @@ wifiController.getEnsayosWifi = async (req, res) => {
 
 /**
  * -----------------------------------------------------
- * Function - postLabWifi
+ * Function - postEnsayoWifi
  * -----------------------------------------------------
  */
-wifiController.postLabWifi = (req, res) => {
+wifiController.postEnsayoWifi = (req, res) => {
   const { idUsuario, elevacion, azimut } = req.body;
 
   if (elevacion < 0 || elevacion > 90) {
@@ -64,11 +62,31 @@ wifiController.postLabWifi = (req, res) => {
     };
     
     try {
+      // let ts = Date.now();
+
+      // let date_ob = new Date(ts);
+
+      // let year = date_ob.getFullYear();
+      // let month = (date_ob.getMonth() + 1) < 10 ? `0${date_ob.getMonth() + 1}` : (date_ob.getMonth() + 1)
+      // let date = date_ob.getDate() < 10 ? `0${date_ob.getDate()}` : date_ob.getDate()
+
+      // let hours = date_ob.getHours() < 10 ? `0${date_ob.getHours()}` : date_ob.getHours()
+      // let minutes = date_ob.getMinutes() < 10 ? `0${date_ob.getMinutes()}` : date_ob.getMinutes()
+      // let seconds = date_ob.getSeconds() < 10 ? `0${date_ob.getSeconds()}` : date_ob.getSeconds()
+
+      // console.log(year + "-" + month + "-" + date);
+      // console.log(`${year}-${month}-${date} ${date_ob.getHours()}:${date_ob.getMinutes()}:${date_ob.getSeconds()}`);
+
+      // let nowDate = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+      // console.log(nowDate);
+
       sequelize.query(
+        // "INSERT INTO Ensayos(idUsuario,fechaHora,datosEntrada,datosSalida,idLaboratorio) VALUES(:idUsuario,:fechaHora,:datosEntrada,:datosSalida,:idLaboratorio);",
         "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
         {
           replacements: {
             idUsuario: idUsuario,
+            // fechaHora: nowDate,
             datosEntrada: JSON.stringify(datosEntrada),
             datosSalida: JSON.stringify(datosSalida),
             idLaboratorio: idLaboratorio,
@@ -78,7 +96,7 @@ wifiController.postLabWifi = (req, res) => {
       );
       res.status(200).json("Parámetros correctos");
     } catch (error) {
-      console.error("-> ERROR postLabWifi:", error);
+      console.error("-> ERROR postEnsayoWifi:", error);
     }
   }
 };

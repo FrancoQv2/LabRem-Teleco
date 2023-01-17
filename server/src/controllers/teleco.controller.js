@@ -39,20 +39,19 @@ telecoController.getLaboratorioById = async (req, res) => {
   await res.send(response[0]);
 };
 
-export { telecoController };
 
 /**
  * -----------------------------------------------------
  * Function - getEnsayosUsuario
  * -----------------------------------------------------
  */
- telecoController.getEnsayosUsuario = async (req, res) => {
+telecoController.getEnsayosUsuario = async (req, res) => {
   console.log(req.params);
-    
+  
   const { idLaboratorio, idUsuario } = req.params;
-
+  
   const response = await sequelize.query(
-    "SELECT DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio AND idUsuario = :idUsuario;",
+    "SELECT DATE(fechaHora) AS Fecha, TIME(CONVERT_TZ(fechaHora, '+00:00', '-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio AND idUsuario = :idUsuario;",
     {
       replacements: {
         idLaboratorio: idLaboratorio,
@@ -86,8 +85,38 @@ export { telecoController };
     })
   }
   console.log("--------------------------------");
-  console.log(response);
+  console.log(dataParsed);
   console.log("--------------------------------");
   
   await res.send(JSON.stringify(dataParsed));
 };
+
+/**
+ * -----------------------------------------------------
+ * Function - postLaboratorio
+ * -----------------------------------------------------
+ */
+ telecoController.postLaboratorio = (req, res) => {
+  console.log(req.body);
+  const { idLaboratorio, area, nombre, descripcion } = req.body;
+    
+    try {
+      sequelize.query(
+        "INSERT INTO Laboratorios(idLaboratorio,area,nombre,descripcion) VALUES(:idLaboratorio,:area,:nombre,:descripcion);",
+        {
+          replacements: {
+            idLaboratorio: idLaboratorio,
+            area: area,
+            nombre: nombre,
+            descripcion: descripcion,
+          },
+          type: QueryTypes.INSERT,
+        }
+      );
+      res.status(200).json("Parámetros correctos");
+    } catch (error) {
+      console.error("-> ERROR postLaboratorio:", error);
+    }
+};
+
+export { telecoController };
