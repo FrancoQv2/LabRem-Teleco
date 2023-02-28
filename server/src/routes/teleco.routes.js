@@ -3,9 +3,9 @@ import { telecoController } from "../controllers/teleco.controller.js";
 import { radioController } from "../controllers/radio.controller.js";
 import { wifiController } from "../controllers/wifi.controller.js";
 
-const { getLaboratorios, getLaboratorioById, getEnsayosUsuario } = telecoController;
-const { postLabRadio, getEnsayosRadio } = radioController;
-const { postLabWifi, getEnsayosWifi } = wifiController;
+const { postLab, getLaboratorios, getLaboratorioById, getEnsayosUsuario,getDeleteEnsayo, getDeleteLaboratorio, getEnsayos, postModLab } = telecoController;
+const { postEnsayoRadio, getEnsayosRadio } = radioController;
+const { postEnsayoWifi, getEnsayosWifi } = wifiController;
 
 const telecoRouter = express.Router();
 
@@ -14,11 +14,13 @@ const telecoRouter = express.Router();
  * Rutas - Laboratorios de Telecomunicaciones
  * -----------------------------------------------------
  */
-telecoRouter.route("/").get(getLaboratorios);
+telecoRouter.route("/").get(getLaboratorios).post(postLab);
 
-telecoRouter.route("/wifi").get(getEnsayosWifi).post(postLabWifi);
+telecoRouter.route("/wifi").get(getEnsayosWifi).post(postEnsayoWifi);
 
-telecoRouter.route("/radio").get(getEnsayosRadio).post(postLabRadio);
+telecoRouter.route("/radio").get(getEnsayosRadio).post(postEnsayoRadio);
+
+telecoRouter.route("/modificarLab").post(postModLab); //para el grupo de gestion
 
 /**
  * -----------------------------------------------------
@@ -27,7 +29,14 @@ telecoRouter.route("/radio").get(getEnsayosRadio).post(postLabRadio);
  */
 telecoRouter.route("/:idLaboratorio").get(getLaboratorioById);
 
-telecoRouter.route("/:idLaboratorio/:idUsuario").get(getEnsayosUsuario);
+telecoRouter.route("/delete/ensayo/:idEnsayo").get(getDeleteEnsayo); //para el grupo de gestion
 
+telecoRouter.route("/delete/laboratorio/:idLaboratorio").get(getDeleteLaboratorio); //para el grupo de gestion
+
+telecoRouter.route("/ensayos/:idLaboratorio").get(getEnsayos); //para el grupo de gestion
+
+
+
+telecoRouter.route("/:idLaboratorio/:idUsuario").get(getEnsayosUsuario);
 
 export default telecoRouter;

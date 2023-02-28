@@ -8,9 +8,11 @@ const telecoController = {};
  */
 telecoController.getLaboratorios = async (req, res) => {
   const response = await sequelize.query(
-    "SELECT * FROM Laboratorios;",
+    "CALL sp_dameLaboratorios();",
     {
-      type: QueryTypes.SELECT,
+      replacements: {
+        
+      }
     }
   );
   console.log(typeof response);
@@ -27,19 +29,16 @@ telecoController.getLaboratorioById = async (req, res) => {
   const { idLaboratorio } = req.params;
 
   const response = await sequelize.query(
-    "SELECT area, nombre, imagen, descripcion FROM Laboratorios WHERE idLaboratorio = :idLaboratorio;",
+    "CALL sp_dameLaboratorio(:idLaboratorio);",
     {
       replacements: {
           idLaboratorio: idLaboratorio
-      },
-      type: QueryTypes.SELECT,
+      } 
     }
   );
   
   await res.send(response[0]);
 };
-
-export { telecoController };
 
 /**
  * -----------------------------------------------------
@@ -52,13 +51,12 @@ export { telecoController };
   const { idLaboratorio, idUsuario } = req.params;
 
   const response = await sequelize.query(
-    "SELECT DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio AND idUsuario = :idUsuario;",
+    "CALL sp_dameEnsayo(:idUsuario,:idLaboratorio);",
     {
       replacements: {
         idLaboratorio: idLaboratorio,
         idUsuario: idUsuario,
-      },
-      type: QueryTypes.SELECT,
+      }
     }
   );
 
@@ -91,3 +89,142 @@ export { telecoController };
   
   await res.send(JSON.stringify(dataParsed));
 };
+
+
+/**
+ * @param {number} idEnsayo
+ * @return {object} informacion de un ensayo en particular
+ */
+telecoController.getDeleteEnsayo = async (req, res) => {
+  const { idEnsayo } = req.params;
+
+  const response = await sequelize.query(
+    "CALL sp_borrarEnsayo(:idEnsayo);",
+    {
+      replacements: {
+        idEnsayo: idEnsayo
+      } 
+    }
+  );
+  
+  await res.send(response[0]);
+};
+
+/**
+ * @param {number} idLaboratorio
+ * @return {object} informacion de un laboratorio en particular
+ */
+telecoController.getDeleteLaboratorio = async (req, res) => {
+  const { idLaboratorio } = req.params;
+
+  const response = await sequelize.query(
+    "CALL sp_borrarLaboratorio(:idLaboratorio);",
+    {
+      replacements: {
+        idLaboratorio: idLaboratorio
+      } 
+    }
+  );
+  
+  await res.send(response[0]);
+};
+
+/**
+ * @param {number} idLaboratorio
+ * @return {object} informacion de un laboratorio en particular
+ */
+telecoController.getEnsayos = async (req, res) => {
+  const { idLaboratorio } = req.params;
+
+  const response = await sequelize.query(
+    "CALL sp_dameEnsayos(:idLaboratorio);",
+    {
+      replacements: {
+        idLaboratorio: idLaboratorio
+      } 
+    }
+  );
+  
+  await res.send(response);
+};
+
+/**
+ * -----------------------------------------------------
+ * Function - postLab
+ * -----------------------------------------------------
+ */
+telecoController.postLab = (req, res) => {
+  const { area, nombre, imagen, descripcion} = req.body;
+
+  if (area == null) {
+    res.status(400).json("Area nula");
+  } else if (nombre == null) {
+    res.status(400).json("nombre nulo");
+  }  else if (descripcion == null) {
+    res.status(400).json("Descripcion nula");
+  }else {    
+    try {
+      sequelize.query(
+        "CALL sp_crearLaboratorio (:area,:nombre,:imagen,:descripcion);",
+        {
+          replacements: {
+            area: area,
+            nombre: nombre,
+            imagen: imagen,
+            descripcion: descripcion,
+          }
+        }
+      );
+      res.status(200).json("Parámetros correctos");
+    } catch (error) {
+      console.error("-> ERROR postLab:", error);
+    }
+  }
+};
+
+/**
+ * -----------------------------------------------------
+ * Function - postModLab
+ * -----------------------------------------------------
+ */
+telecoController.postModLab = (req, res) => {
+  const {codLaboratorio, area, nombre, imagen, descripcion} = req.body;
+  const response = sequelize.query(
+    "CALL sp_dameLaboratorio(:codLaboratorio);",
+    {
+      replacements: {
+        codLaboratorio: codLaboratorio
+      }
+    }
+  );
+  res.send(response);
+  /*if (respuesta==null){
+    res.status(400).json("codigo no asociado a ningun laboratorio");
+  } else if (area == null) {
+    res.status(400).json("Area nula");
+  } else if (nombre == null) {
+    res.status(400).json("nombre nulo");
+  }  else if (descripcion == null) {
+    res.status(400).json("Descripcion nula");
+  }else { 
+
+    try {
+      sequelize.query(
+        "CALL sp_modificarLaboratorio (:area,:nombre,:imagen,:descripcion);",
+        {
+          replacements: {
+            area: area,
+            nombre: nombre,
+            imagen: imagen,
+            descripcion: descripcion,
+          }
+        }
+      );
+      res.status(200).json("Parámetros correctos");
+    } catch (error) {
+      console.error("-> ERROR postLab:", error);
+    }
+  }*/
+};
+
+export { telecoController };

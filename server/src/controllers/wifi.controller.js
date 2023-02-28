@@ -1,5 +1,4 @@
 import { sequelize } from "../index.js";
-import { QueryTypes } from "sequelize";
 
 const idLaboratorio = 1;
 
@@ -12,12 +11,12 @@ wifiController.getEnsayosWifi = async (req, res) => {
   console.log(req.params);
 
   const response = await sequelize.query(
-    "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
+    "CALL sp_dameEnsayo(:idUsuario,:idLaboratorio);",
     {
       replacements: {
-        idLaboratorio: idLaboratorio
-      },
-      type: QueryTypes.SELECT,
+        idUsuario: 1,
+        idLaboratorio: idLaboratorio,
+      }
     }
   );
 
@@ -41,10 +40,10 @@ wifiController.getEnsayosWifi = async (req, res) => {
 
 /**
  * -----------------------------------------------------
- * Function - postLabWifi
+ * Function - postEnsayoWifi
  * -----------------------------------------------------
  */
-wifiController.postLabWifi = (req, res) => {
+wifiController.postEnsayoWifi = (req, res) => {
   const { idUsuario, elevacion, azimut } = req.body;
 
   if (elevacion < 0 || elevacion > 90) {
@@ -65,20 +64,19 @@ wifiController.postLabWifi = (req, res) => {
     
     try {
       sequelize.query(
-        "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
+        "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
         {
           replacements: {
             idUsuario: idUsuario,
             datosEntrada: JSON.stringify(datosEntrada),
             datosSalida: JSON.stringify(datosSalida),
             idLaboratorio: idLaboratorio,
-          },
-          type: QueryTypes.INSERT,
+          }
         }
       );
       res.status(200).json("Parámetros correctos");
     } catch (error) {
-      console.error("-> ERROR postLabWifi:", error);
+      console.error("-> ERROR postEnsayoWifi:", error);
     }
   }
 };

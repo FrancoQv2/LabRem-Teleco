@@ -10,14 +10,14 @@ const radioController = {};
  */
  radioController.getEnsayosRadio = async (req, res) => {
   console.log(req.params);
-
+  const { idUsuario } = req.params;
   const response = await sequelize.query(
-    "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(fechaHora) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
+    "CALL sp_dameEnsayo(:idUsuario,:idLaboratorio);",
     {
       replacements: {
-        idLaboratorio: idLaboratorio
-      },
-      type: QueryTypes.SELECT,
+        idUsuario: idUsuario,
+        idLaboratorio: idLaboratorio,
+      }
     }
   );
 
@@ -42,10 +42,10 @@ const radioController = {};
 
 /**
  * -----------------------------------------------------
- * Function - postLabRadio
+ * Function - postEnsayoRadio
  * -----------------------------------------------------
  */
- radioController.postLabRadio = (req, res) => {
+ radioController.postEnsayoRadio = (req, res) => {
   const {
     idUsuario,
     tipoModulacion,
@@ -106,20 +106,19 @@ const radioController = {};
 
     try {
       sequelize.query(
-        "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
+        "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
         {
           replacements: {
             idUsuario: idUsuario,
             datosEntrada: JSON.stringify(datosEntrada),
             datosSalida: JSON.stringify(datosSalida),
             idLaboratorio: idLaboratorio,
-          },
-          type: QueryTypes.INSERT,
+          }
         }
       );
       res.status(200).json("Parámetros correctos");
     } catch (error) {
-      console.error("-> ERROR postLabRadio:", error);
+      console.error("-> ERROR postEnsayoRadio:", error);
     }
   }
 };
