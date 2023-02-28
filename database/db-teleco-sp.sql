@@ -62,11 +62,15 @@ SALIR: BEGIN
 	IF ((codLaboratorioN IS NULL) OR (areaN IS NULL) or (nombreN IS NULL) or (descripcionN IS NULL)) THEN
 		SELECT 'alguno de los paramentros es nulo';
 		LEAVE SALIR;
-	ELSE
+	ELSEIF NOT EXISTS (SELECT * FROM Laboratorios where codLaboratorio=codLaboratorioN) THEN
+        SELECT 'no existe un laboratorio con este codigo';
+		LEAVE SALIR;
+    ELSE
 		START TRANSACTION;
 		UPDATE Laboratorios
 		SET area = areaN, nombre = nombreN,imagen = imagenN, descripcion = descripcionN 
 		WHERE codLaboratorio = codLaboratorioN;
+        SELECT 'Parámetros correctos';
         COMMIT;
     END IF;
 END//
