@@ -1,44 +1,8 @@
 import { sequelize } from "../index.js";
-import { QueryTypes } from "sequelize";
 
 const idLaboratorio = 2;
 
 const radioController = {};
-
-/**
- * @return {array} todos los ensayos realizados para el laboratorio de Radio
- */
- radioController.getEnsayosRadio = async (req, res) => {
-  console.log(req.params);
-  const { idUsuario } = req.params;
-  const response = await sequelize.query(
-    "CALL sp_dameEnsayo(:idUsuario,:idLaboratorio);",
-    {
-      replacements: {
-        idUsuario: idUsuario,
-        idLaboratorio: idLaboratorio,
-      }
-    }
-  );
-
-  console.log(response);
-  
-  let dataParsed = [];
-  response.map((ensayo)=>{
-    const newEnsayo = {}
-    newEnsayo.Usuario = ensayo.idUsuario
-    newEnsayo.Fecha = ensayo.Fecha
-    newEnsayo.Hora = ensayo.Hora
-    newEnsayo.intensidadMin = ensayo.datosEntrada.intensidadMin
-    newEnsayo.intensidadMax = ensayo.datosEntrada.intensidadMax
-    newEnsayo.tipoModulacion = ensayo.datosEntrada.tipoModulacion
-    newEnsayo.tipoCodificacion = ensayo.datosEntrada.tipoCodificacion
-    dataParsed.push(newEnsayo)
-  })
-  
-  console.log(dataParsed);
-  await res.send(dataParsed);
-};
 
 /**
  * -----------------------------------------------------

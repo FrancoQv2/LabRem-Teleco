@@ -5,14 +5,14 @@
 DROP PROCEDURE IF EXISTS sp_crearLaboratorio;
 
 DELIMITER //
-CREATE PROCEDURE sp_crearLaboratorio(areaN VARCHAR(50),nombreN VARCHAR(100),imagenN VARCHAR(50),descripcionN VARCHAR(3000))
+CREATE PROCEDURE sp_crearLaboratorio(nombreN VARCHAR(100),imagenN VARCHAR(50),descripcionN VARCHAR(3000))
 SALIR: BEGIN
-	IF ((areaN IS NULL) or (nombreN IS NULL) or (descripcionN IS NULL)) THEN
+	IF ((nombreN IS NULL) or (descripcionN IS NULL)) THEN
 		SELECT 'alguno de los paramentros es nulo';
 		LEAVE SALIR;
 	ELSE
 		START TRANSACTION;
-		INSERT INTO Laboratorios(area,nombre,imagen,descripcion) VALUES (areaN,nombreN,imagenN,descripcionN);
+		INSERT INTO Laboratorios(area,nombre,imagen,descripcion) VALUES (DEFAULT,nombreN,imagenN,descripcionN);
         COMMIT;
     END IF;
 END//
@@ -36,7 +36,7 @@ DELIMITER ;
 -- -----------------------------------------------------
 --  un laboratorio en especial
 -- -----------------------------------------------------
-
+DROP PROCEDURE IF EXISTS sp_dameLaboratorio;
 DELIMITER //
 CREATE PROCEDURE sp_dameLaboratorio(codLaboratorioN VARCHAR(6))
 SALIR: BEGIN
@@ -98,13 +98,13 @@ DELIMITER ;
 
 
 
---------------------------------
---------------------------------
---------------------------------
+-- ------------------------------
+-- ------------------------------
+-- ------------------------------
 -- Ensayo
---------------------------------
---------------------------------
---------------------------------
+-- ------------------------------
+-- ------------------------------
+-- ------------------------------
 
 -- -----------------------------------------------------
 -- crear ensayo
@@ -183,13 +183,13 @@ SALIR: BEGIN
     END IF;
 END//
 DELIMITER ;
---------------------------------------------------------------
---------------------------------------------------------------
---------------------------------------------------------------
--------------------------- trigger ---------------------------
---------------------------------------------------------------
---------------------------------------------------------------
---------------------------------------------------------------
+-- ------------------------------------------------------------
+-- ------------------------------------------------------------
+-- ------------------------------------------------------------
+-- ------------------------ trigger ---------------------------
+-- ------------------------------------------------------------
+-- ------------------------------------------------------------
+-- ------------------------------------------------------------
 
 -- -----------------------------------------------------
 -- se Agrega un ensayo trigger

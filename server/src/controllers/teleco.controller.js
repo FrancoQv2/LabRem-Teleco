@@ -1,5 +1,4 @@
 import { sequelize } from "../index.js";
-import { QueryTypes } from "sequelize";
 
 const telecoController = {};
 
@@ -7,14 +6,7 @@ const telecoController = {};
  * @return {array} array de laboratorios de Telecomunicaciones
  */
 telecoController.getLaboratorios = async (req, res) => {
-  const response = await sequelize.query(
-    "CALL sp_dameLaboratorios();",
-    {
-      replacements: {
-        
-      }
-    }
-  );
+  const response = await sequelize.query("CALL sp_dameLaboratorios();");
   console.log(typeof response);
   console.log(response);
 

@@ -5,40 +5,6 @@ const idLaboratorio = 1;
 const wifiController = {};
 
 /**
- * @return {array} todos los ensayos realizados para el laboratorio de Wifi
- */
-wifiController.getEnsayosWifi = async (req, res) => {
-  console.log(req.params);
-
-  const response = await sequelize.query(
-    "CALL sp_dameEnsayo(:idUsuario,:idLaboratorio);",
-    {
-      replacements: {
-        idUsuario: 1,
-        idLaboratorio: idLaboratorio,
-      }
-    }
-  );
-
-  console.log(response);
-  
-  let dataParsed = [];
-  response.map((ensayo)=>{
-    const newEnsayo = {}
-    newEnsayo.Usuario = ensayo.idUsuario
-    newEnsayo.Fecha = ensayo.Fecha
-    newEnsayo.Hora = ensayo.Hora
-    newEnsayo.Azimut = ensayo.datosEntrada.rangoAzimut
-    newEnsayo.Elevacion = ensayo.datosEntrada.rangoElevacion
-    dataParsed.push(newEnsayo)
-  })
-  
-  console.log(dataParsed);
-  await res.send(dataParsed);
-};
-
-
-/**
  * -----------------------------------------------------
  * Function - postEnsayoWifi
  * -----------------------------------------------------

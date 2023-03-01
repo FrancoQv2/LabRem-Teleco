@@ -4,8 +4,8 @@ import { radioController } from "../controllers/radio.controller.js";
 import { wifiController } from "../controllers/wifi.controller.js";
 
 const { postLab, getLaboratorios, getLaboratorioById, getEnsayosUsuario,getDeleteEnsayo, getDeleteLaboratorio, getEnsayos, postModLab } = telecoController;
-const { postEnsayoRadio, getEnsayosRadio } = radioController;
-const { postEnsayoWifi, getEnsayosWifi } = wifiController;
+const { postEnsayoRadio } = radioController;
+const { postEnsayoWifi } = wifiController;
 
 const telecoRouter = express.Router();
 
@@ -16,9 +16,9 @@ const telecoRouter = express.Router();
  */
 telecoRouter.route("/").get(getLaboratorios).post(postLab);
 
-telecoRouter.route("/wifi").get(getEnsayosWifi).post(postEnsayoWifi);
+telecoRouter.route("/wifi").post(postEnsayoWifi);
 
-telecoRouter.route("/radio").get(getEnsayosRadio).post(postEnsayoRadio);
+telecoRouter.route("/radio").post(postEnsayoRadio);
 
 telecoRouter.route("/modificarLab").post(postModLab); //para el grupo de gestion
 
@@ -34,8 +34,6 @@ telecoRouter.route("/delete/ensayo/:idEnsayo").get(getDeleteEnsayo); //para el g
 telecoRouter.route("/delete/laboratorio/:idLaboratorio").get(getDeleteLaboratorio); //para el grupo de gestion
 
 telecoRouter.route("/ensayos/:idLaboratorio").get(getEnsayos); //para el grupo de gestion
-
-
 
 telecoRouter.route("/:idLaboratorio/:idUsuario").get(getEnsayosUsuario);
 
