@@ -1,4 +1,4 @@
-import { sequelize } from "../index.js";
+import { sequelize, delay } from "../index.js";
 import axios from "axios";
 
 const idLaboratorio = 1;
@@ -77,7 +77,5 @@ wifiController.postEnsayoWifi = async (req, res) => {
     }
   }
 };
-function delay(time) {
-  return new Promise(resolve => setTimeout(resolve, time));
-} 
+
 export { wifiController };
