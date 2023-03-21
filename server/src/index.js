@@ -7,7 +7,8 @@ import expressServer from "express";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import cors from "cors";
-import Sequelize from "sequelize";
+
+import { dbConnection } from "./db/dbconfig.js"
 
 import telecoRouter from "./routes/teleco.routes.js";
 
@@ -33,13 +34,4 @@ app.listen(PORT, () => {
   console.log("----------------------");
 });
 
-export const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: process.env.DB_DIALECT
-  }
-);
+export const db = dbConnection;

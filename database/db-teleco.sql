@@ -17,11 +17,12 @@ DROP TABLE IF EXISTS Laboratorios;
 
 CREATE TABLE IF NOT EXISTS Laboratorios (
   idLaboratorio INT NOT NULL AUTO_INCREMENT,
+  codigo CHAR(20) NOT NULL,
   area VARCHAR(50) NOT NULL DEFAULT 'Telecomunicaciones',
   nombre VARCHAR(100) NOT NULL,
-  imagen VARCHAR(200) NULL,
   descripcion VARCHAR(3000) NULL,
   PRIMARY KEY (idLaboratorio),
+  UNIQUE INDEX UI_Laboratorios_codigo (codigo) VISIBLE,
   UNIQUE INDEX UI_Laboratorios_nombre (nombre) VISIBLE
 ) ENGINE = InnoDB;
 

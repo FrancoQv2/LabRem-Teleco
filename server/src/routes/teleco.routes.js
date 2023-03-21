@@ -1,13 +1,13 @@
-import express from "express";
-import { telecoController } from "../controllers/teleco.controller.js";
-import { radioController } from "../controllers/radio.controller.js";
-import { wifiController } from "../controllers/wifi.controller.js";
+import express from "express"
+import { telecoController } from "../controllers/teleco.controller.js"
+import { radioController } from "../controllers/radio.controller.js"
+import { wifiController } from "../controllers/wifi.controller.js"
 
-const { getLaboratorios, postLaboratorio, getLaboratorioById, getEnsayosUsuario } = telecoController;
-const { postEnsayoRadio, getEnsayosRadio } = radioController;
-const { postEnsayoWifi, getEnsayosWifi } = wifiController;
+const { getLaboratorios, postLaboratorio, getLaboratorioById, getEnsayosUsuario } = telecoController
+const { postEnsayoRadio, getEnsayosRadio } = radioController
+const { postEnsayoWifi, getEnsayosWifi } = wifiController
 
-const telecoRouter = express.Router();
+const telecoRouter = express.Router()
 
 /**
  * -----------------------------------------------------
@@ -16,15 +16,15 @@ const telecoRouter = express.Router();
  */
 telecoRouter.route("/")
     .get(getLaboratorios)
-    .post(postLaboratorio);
+    .post(postLaboratorio)
 
 telecoRouter.route("/wifi")
     .get(getEnsayosWifi)
-    .post(postEnsayoWifi);
+    .post(postEnsayoWifi)
 
 telecoRouter.route("/radio")
     .get(getEnsayosRadio)
-    .post(postEnsayoRadio);
+    .post(postEnsayoRadio)
 
 /**
  * -----------------------------------------------------
@@ -32,10 +32,10 @@ telecoRouter.route("/radio")
  * -----------------------------------------------------
  */
 telecoRouter.route("/:idLaboratorio")
-    .get(getLaboratorioById);
+    .get(getLaboratorioById)
 
 telecoRouter.route("/:idLaboratorio/:idUsuario")
-    .get(getEnsayosUsuario);
+    .get(getEnsayosUsuario)
 
 
-export default telecoRouter;
+export default telecoRouter
