@@ -8,6 +8,7 @@ const telecoController = {}
 const queries = {
     // getLaboratorios: "SELECT * FROM Laboratorios;",
     getLaboratorios: "CALL sp_dameLaboratorios();",
+    // getLaboratorioById: "select * from Laboratorios where ",
     getLaboratorioById: "CALL sp_dameLaboratorio(:idLaboratorio);",
     getEnsayosUsuario: "SELECT DATE_FORMAT(fechaHora,'%d/%m/%y') AS Fecha, TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio AND idUsuario = :idUsuario;",
     // getEnsayosUsuario: "CALL sp_dameEnsayo(:idUsuario,:idLaboratorio);",
@@ -19,10 +20,7 @@ const queries = {
  */
 telecoController.getLaboratorios = async (req, res) => {
     const data = await db.query(
-        queries.getLaboratorios,
-        // {
-        //     type: QueryTypes.SELECT
-        // }
+        queries.getLaboratorios
     )
 
     await res.send(data)
@@ -37,6 +35,7 @@ telecoController.getLaboratorioById = async (req, res) => {
     console.log(`--> getLaboratorioById - ${JSON.stringify(req.query)}`)
 
     const { idLaboratorio } = req.params
+    console.log(idLaboratorio);
 
     const response = await db.query(
         queries.getLaboratorioById,
@@ -44,7 +43,7 @@ telecoController.getLaboratorioById = async (req, res) => {
             replacements: {
                 idLaboratorio: idLaboratorio
             },
-            type: QueryTypes.SELECT
+            // type: QueryTypes.SELECT
         }
     )
 
@@ -74,6 +73,7 @@ telecoController.getEnsayosUsuario = async (req, res) => {
     let dataParsed = []
 
     if (idLaboratorio == 1) {
+
         response.map((ensayo, index) => {
             const newEnsayo = {}
             newEnsayo.index = index + 1
@@ -81,6 +81,7 @@ telecoController.getEnsayosUsuario = async (req, res) => {
             newEnsayo.Hora = ensayo.Hora
             newEnsayo.Azimut = ensayo.datosEntrada.rangoAzimut
             newEnsayo.Elevacion = ensayo.datosEntrada.rangoElevacion
+            newEnsayo.Signal = `${ensayo.datosSalida.signalStrength} dBm`
             dataParsed.push(newEnsayo)
         })
     } else if (idLaboratorio == 2) {
@@ -97,7 +98,7 @@ telecoController.getEnsayosUsuario = async (req, res) => {
         })
     }
 
-    await res.json(dataParsed)
+    await res.status(200).json(dataParsed)
 }
 
 /**
@@ -244,19 +245,20 @@ telecoController.getEnsayos = async (req, res) => {
 };
 
 /**
- * @param {string} codLaboratorio
+ * @param {string} idLaboratorio
  * @return
  */
 telecoController.postModLab = async (req, res) => {
-    const { codLaboratorio, area, nombre, imagen, descripcion } = req.body;
+    const { idLaboratorio, area, nombre, imagen, descripcion } = req.body;
     const respuesta = await sequelize.query(
-        "CALL sp_dameLaboratorio(:codLaboratorio)",
+        "CALL sp_dameLaboratorio(:idLaboratorio)",
         {
             replacements: {
-                codLaboratorio: codLaboratorio
+                idLaboratorio: idLaboratorio
             }
         }
     );
+    
     if (respuesta[0] == null) {
         res.status(400).json("codigo no asociado a ningun laboratorio existente");
     } else if (area == null) {
@@ -269,10 +271,10 @@ telecoController.postModLab = async (req, res) => {
 
         try {
             sequelize.query(
-                "CALL sp_modificarLaboratorio (:codLaboratorio,:area,:nombre,:imagen,:descripcion);",
+                "CALL sp_modificarLaboratorio (:idLaboratorio,:area,:nombre,:imagen,:descripcion);",
                 {
                     replacements: {
-                        codLaboratorio: codLaboratorio,
+                        idLaboratorio: idLaboratorio,
                         area: area,
                         nombre: nombre,
                         imagen: imagen,
