@@ -30,3 +30,7 @@ Para levantar un entorno dev para el server en el 3005
 $ sudo chmod 777 scripts/dev-server.sh
 $ ./scripts/dev-server.sh
 ```
+
+```bash
+$ docker run -ti --name dev-teleco -v $(pwd)/server:/usr/src/server -p 3033:3000 --network labrem-net dev-teleco:latest
+```

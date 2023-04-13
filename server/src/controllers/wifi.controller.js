@@ -1,23 +1,73 @@
-import { sequelize, delay } from "../index.js";
-import axios from "axios";
+import { db } from "../index.js"
+import { QueryTypes } from "sequelize"
 
-const idLaboratorio = 1;
+import { postArduino } from "../lib/arduino.js"
+import { getStatsBullet } from "../lib/bullet.js";
 
-const wifiController = {};
+const idLaboratorio = 1
+
+const queries = {
+    getEnsayosWifi: "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
+    // postEnsayoWifi: "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
+    postEnsayoWifi: "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
+}
+
+const wifiController = {}
 
 /**
- * -----------------------------------------------------
- * Function - postEnsayoWifi
- * -----------------------------------------------------
+ * 
  */
-wifiController.postEnsayoWifi = async (req, res) => {
-  const { idUsuario, elevacion, azimut } = req.body;
+wifiController.getEnsayosWifi = async (req, res) => {
+    // console.log("-----");
+    // console.log(req.path);
+    // console.log(req.originalUrl);
+    // console.log(req.params);
+    // console.log(req.query);
+    // console.log("-----");
 
-  if (elevacion < 0 || elevacion > 90) {
-    res.status(400).json("Elevación incorrecta");
-  } else if (azimut < 0 || azimut > 90) {
-    res.status(400).json("Azimut incorrecta");
-  } else {
+    // const { idLaboratorio } = req.query
+
+    const data = await db.query(
+        queries.getEnsayosWifi,
+        {
+            replacements: {
+                idLaboratorio: idLaboratorio
+            },
+            type: QueryTypes.SELECT
+        }
+    )
+
+    let dataParsed = []
+    data.map((ensayo) => {
+        const newEnsayo = {}
+        newEnsayo.Usuario = ensayo.idUsuario
+        newEnsayo.Fecha = ensayo.Fecha
+        newEnsayo.Hora = ensayo.Hora
+        newEnsayo.Azimut = ensayo.datosEntrada.rangoAzimut
+        newEnsayo.Elevacion = ensayo.datosEntrada.rangoElevacion
+        newEnsayo.Signal = ensayo.datosSalida.signalStrength
+        dataParsed.push(newEnsayo)
+    })
+
+    await res.status(200).send(dataParsed)
+}
+
+// ------------------------------------------------------
+// POST postEnsayoWifi
+// ------------------------------------------------------
+
+wifiController.postEnsayoWifi = async (req, res) => {
+    console.log(`---\n--> postEnsayoWifi - ${JSON.stringify(req.body)}\n---`)
+
+    const { idUsuario, elevacion, azimut } = req.body
+
+    if (elevacion < 0 || elevacion > 90) {
+        res.status(400)
+            .send("Elevación incorrecta")
+    } else if (azimut < 0 || azimut > 90) {
+        res.status(400)
+            .send("Azimut incorrecta")
+    } else {
 
     const datosEntrada = {
       rangoElevacion: elevacion,
@@ -64,8 +114,7 @@ wifiController.postEnsayoWifi = async (req, res) => {
     } catch (error) {
       console.error("-> ERROR postEnsayoWifi:", error);
     }
-  }
-};
+}
 
 wifiController.postEnsayoWifisave = async (req, res) => {
   const { idUsuario, elevacion, azimut } = req.body;
