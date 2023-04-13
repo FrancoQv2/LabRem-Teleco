@@ -5,7 +5,7 @@ import { wifiController } from "../controllers/wifi.controller.js";
 
 const { postLab, getLaboratorios, getLaboratorioById, getEnsayosUsuario,getDeleteEnsayo, getDeleteLaboratorio, getEnsayos, postModLab } = telecoController;
 const { postEnsayoRadio } = radioController;
-const { postEnsayoWifi } = wifiController;
+const { postEnsayoWifi,postEnsayoWifisave } = wifiController;
 
 const telecoRouter = express.Router();
 
@@ -17,6 +17,8 @@ const telecoRouter = express.Router();
 telecoRouter.route("/").get(getLaboratorios).post(postLab);
 
 telecoRouter.route("/wifi").post(postEnsayoWifi);
+
+telecoRouter.route("/wifisave").post(postEnsayoWifisave);
 
 telecoRouter.route("/radio").post(postEnsayoRadio);
 
