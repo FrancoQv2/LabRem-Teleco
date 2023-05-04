@@ -35,6 +35,4 @@ app.listen(PORT, () => {
   console.log("----------------------");
 });
 
-
-
 export const db = dbConnection;

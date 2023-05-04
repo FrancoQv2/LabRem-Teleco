@@ -8,8 +8,8 @@ const idLaboratorio = 1
 
 const queries = {
     getEnsayosWifi: "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
-    // postEnsayoWifi: "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
-    postEnsayoWifi: "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
+    // getEnsayosWifi: "CALL sp_dameEnsayos(:idLaboratorio);",
+    postEnsayoWifi: "CALL sp_crearEnsayo(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
 }
 
 const wifiController = {}
@@ -40,12 +40,12 @@ wifiController.getEnsayosWifi = async (req, res) => {
     let dataParsed = []
     data.map((ensayo) => {
         const newEnsayo = {}
-        newEnsayo.Usuario = ensayo.idUsuario
-        newEnsayo.Fecha = ensayo.Fecha
-        newEnsayo.Hora = ensayo.Hora
-        newEnsayo.Azimut = ensayo.datosEntrada.rangoAzimut
+        newEnsayo.Usuario   = ensayo.idUsuario
+        newEnsayo.Fecha     = ensayo.Fecha
+        newEnsayo.Hora      = ensayo.Hora
+        newEnsayo.Azimut    = ensayo.datosEntrada.rangoAzimut
         newEnsayo.Elevacion = ensayo.datosEntrada.rangoElevacion
-        newEnsayo.Signal = ensayo.datosSalida.signalStrength
+        newEnsayo.Signal    = ensayo.datosSalida.signalStrength
         dataParsed.push(newEnsayo)
     })
 
@@ -73,9 +73,9 @@ wifiController.postEnsayoWifi = async (req, res) => {
             rangoElevacion: elevacion,
             rangoAzimut: azimut
         }
-        
+
         const statsBullet = await getStatsBullet()
-        
+
         const datosSalida = {
             signalStrength: statsBullet.wireless.signal
         }
@@ -116,15 +116,15 @@ wifiController.postEnsayoWifi = async (req, res) => {
                 queries.postEnsayoWifi,
                 {
                     replacements: {
-                        idUsuario: idUsuario,
-                        datosEntrada: JSON.stringify(datosEntrada),
-                        datosSalida: JSON.stringify(datosSalida),
-                        idLaboratorio: idLaboratorio
+                        idUsuario:      idUsuario,
+                        datosEntrada:   JSON.stringify(datosEntrada),
+                        datosSalida:    JSON.stringify(datosSalida),
+                        idLaboratorio:  idLaboratorio
                     }
                 }
             )
 
-            res.status(200).json("Parámetros correctos")
+            res.status(200).json("Parámetros correctos. Guardado en DB")
         } catch (error) {
             console.error("-> ERROR postEnsayoWifi:", error)
         }
