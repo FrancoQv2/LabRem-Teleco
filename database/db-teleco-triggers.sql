@@ -11,7 +11,7 @@ CREATE TRIGGER  tg_crearLaboratorio
 AFTER INSERT ON Laboratorios 
 FOR EACH ROW
 BEGIN
-	INSERT INTO auditoriaLaboratorios(tipo,fechaHora,`user`,`host`,idLaboratorio,area,nombre,descripcion) 
+	INSERT INTO AuditoriaLaboratorios(tipo, fechaHora, `user`, `host`, idLaboratorio, area, nombre, descripcion) 
     VALUES (
         'I',
         NOW(),
@@ -36,7 +36,7 @@ CREATE TRIGGER tg_borrarLaboratorio
 BEFORE DELETE ON Laboratorios 
 FOR EACH ROW
 BEGIN
-	INSERT INTO auditoriaLaboratorios(tipo,fechaHora,`user`,`host`,idLaboratorio,area,nombre,descripcion) 
+	INSERT INTO AuditoriaLaboratorios(tipo, fechaHora, `user`, `host`, idLaboratorio, area, nombre, descripcion) 
     VALUES (
         'D',
         NOW(),
@@ -61,7 +61,7 @@ CREATE TRIGGER tg_modificarLaboratorio_before
 BEFORE UPDATE ON Laboratorios 
 FOR EACH ROW 
 BEGIN
-	INSERT INTO auditoriaLaboratorios(tipo,fechaHora,`user`,`host`,idLaboratorio,area,nombre,descripcion)  
+	INSERT INTO AuditoriaLaboratorios(tipo, fechaHora, `user`, `host`, idLaboratorio, area, nombre, descripcion)  
 	VALUES (
         'B',
         NOW(),
@@ -85,7 +85,7 @@ CREATE TRIGGER tg_modificarLaboratorio_after
 AFTER UPDATE ON Laboratorios 
 FOR EACH ROW
 BEGIN
-	INSERT INTO auditoriaLaboratorios(tipo,fechaHora,`user`,`host`,idLaboratorio,area,nombre,descripcion)  
+	INSERT INTO AuditoriaLaboratorios(tipo, fechaHora, `user`, `host`, idLaboratorio, area, nombre, descripcion)  
     VALUES (
         'A',
         NOW(),
@@ -110,7 +110,7 @@ CREATE TRIGGER  tg_crearEnsayo
 AFTER INSERT ON Ensayos 
 FOR EACH ROW
 BEGIN
-	INSERT INTO auditoriaEnsayos(tipo,fechaHora,`user`,`host`,idEnsayo,idUsuario,fechaHoraE,datosEntrada,datosSalida,idLaboratorio) 
+	INSERT INTO AuditoriaEnsayos(tipo, fechaHora, `user`, `host`, idEnsayo, idUsuario, fechaHoraE, datosEntrada, datosSalida, idLaboratorio) 
     VALUES (
         'I',
         NOW(),
@@ -137,7 +137,7 @@ CREATE TRIGGER tg_borrarEnsayo
 BEFORE DELETE ON Ensayos 
 FOR EACH ROW
 BEGIN
-	INSERT INTO auditoriaEnsayos(tipo,fechaHora,`user`,`host`,idEnsayo,idUsuario,fechaHoraE,datosEntrada,datosSalida,idLaboratorio)
+	INSERT INTO AuditoriaEnsayos(tipo, fechaHora, `user`, `host`, idEnsayo, idUsuario, fechaHoraE, datosEntrada, datosSalida, idLaboratorio)
     VALUES (
         'D',
         NOW(),

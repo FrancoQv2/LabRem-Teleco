@@ -1,7 +1,7 @@
 import { db } from "../index.js"
 import { QueryTypes } from "sequelize"
 
-import { postArduino } from "../lib/arduino.js"
+import { postArduino, getArduino } from "../lib/arduino.js"
 import { getStatsBullet } from "../lib/bullet.js";
 
 const idLaboratorio = 1
@@ -9,7 +9,7 @@ const idLaboratorio = 1
 const queries = {
     getEnsayosWifi: "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
     // getEnsayosWifi: "CALL sp_dameEnsayos(:idLaboratorio);",
-    postEnsayoWifi: "CALL sp_crearEnsayo(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
+    postEnsayoWifi: "CALL sp_crearEnsayo(:idUsuario, :datosEntrada, :datosSalida, :idLaboratorio);"
 }
 
 const wifiController = {}
@@ -52,12 +52,11 @@ wifiController.getEnsayosWifi = async (req, res) => {
     await res.status(200).send(dataParsed)
 }
 
-// ------------------------------------------------------
-// POST postEnsayoWifi
-// ------------------------------------------------------
-
+/**
+ * 
+ */
 wifiController.postEnsayoWifi = async (req, res) => {
-    console.log(`---\n--> postEnsayoWifi - ${JSON.stringify(req.body)}\n---`)
+    console.log(`-\n--> postEnsayoWifi - ${JSON.stringify(req.body)}\n---`)
 
     const { idUsuario, elevacion, azimut } = req.body
 
@@ -74,14 +73,21 @@ wifiController.postEnsayoWifi = async (req, res) => {
             rangoAzimut: azimut
         }
 
-        const statsBullet = await getStatsBullet()
+        // const statsBullet = await getStatsBullet()
 
         const datosSalida = {
-            signalStrength: statsBullet.wireless.signal
+            // signalStrength: statsBullet.wireless.signal
+            signalStrength: -90 
         }
 
+        // const resArduino = await getArduino()
+        // console.log("--asd")
+        // console.log(resArduino.status)
+        
         try {
-            // let resArduino = await postArduino(azimut, elevacion)
+            let resArduino = await postArduino(azimut, elevacion)
+            console.log(resArduino.data.msg)
+            
 
             // switch (resArduino.data.Error) {
             //     case 0:
@@ -110,7 +116,8 @@ wifiController.postEnsayoWifi = async (req, res) => {
             //         break
             // }
 
-            // res.status(200).json(msg);
+            // res.status(200).json({msg: msg});
+
 
             db.query(
                 queries.postEnsayoWifi,
@@ -124,8 +131,9 @@ wifiController.postEnsayoWifi = async (req, res) => {
                 }
             )
 
-            res.status(200).json("Parámetros correctos. Guardado en DB")
+            res.status(200).json({ msg: "Parámetros correctos. Guardado en DB"})
         } catch (error) {
+            res.status(500).json({ msg: "Error en postEnsayoWifi!"})
             console.error("-> ERROR postEnsayoWifi:", error)
         }
     }

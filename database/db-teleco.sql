@@ -48,6 +48,25 @@ CREATE TABLE IF NOT EXISTS Ensayos (
 ) ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Tabla - AuditoriaLaboratorios
+-- -----------------------------------------------------
+
+DROP TABLE IF EXISTS AuditoriaLaboratorios;
+
+CREATE TABLE IF NOT EXISTS AuditoriaLaboratorios (
+  idLinea       INT           NOT NULL AUTO_INCREMENT,
+  tipo          CHAR(1)       NOT NULL,
+  fechaHora     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  user          VARCHAR(60)   NOT NULL,
+  host          VARCHAR(60)   NOT NULL,
+  idLaboratorio INT           NOT NULL,
+  area          VARCHAR(50)   NOT NULL,
+  nombre        VARCHAR(100)  NOT NULL,
+  descripcion   TEXT          NULL,
+  PRIMARY KEY (idLinea)
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
 -- Tabla - AuditoriaEnsayos
 -- -----------------------------------------------------
 
@@ -62,28 +81,9 @@ CREATE TABLE IF NOT EXISTS AuditoriaEnsayos (
   idEnsayo      INT           NOT NULL,
   idUsuario     INT           NOT NULL,
   fechaHoraE    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  idLaboratorio VARCHAR(6)    NOT NULL,
-  datosEntrada  JSON,
-  datosSalida   JSON,
-  PRIMARY KEY (idLinea)
-) ENGINE=InnoDB;
-
--- -----------------------------------------------------
--- Tabla - AuditoriaLaboratorios
--- -----------------------------------------------------
-
-DROP TABLE IF EXISTS AuditoriaLaboratorios;
-
-CREATE TABLE IF NOT EXISTS AuditoriaLaboratorios (
-  idLinea       INT           NOT NULL AUTO_INCREMENT,
-  tipo          CHAR(1)       NOT NULL,
-  fechaHora     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  user          VARCHAR(60)   NOT NULL,
-  host          VARCHAR(60)   NOT NULL,
-  idLaboratorio VARCHAR(6)    NOT NULL,
-  area          VARCHAR(50)   NOT NULL,
-  nombre        VARCHAR(100)  NOT NULL,
-  descripcion   VARCHAR(3000) NOT NULL,
+  idLaboratorio INT           NOT NULL,
+  datosEntrada  JSON          NULL,
+  datosSalida   JSON          NULL,
   PRIMARY KEY (idLinea)
 ) ENGINE=InnoDB;
 

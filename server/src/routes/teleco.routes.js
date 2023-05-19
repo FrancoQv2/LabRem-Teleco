@@ -4,7 +4,7 @@ import { telecoController } from "../controllers/teleco.controller.js"
 import { radioController } from "../controllers/radio.controller.js"
 import { wifiController } from "../controllers/wifi.controller.js"
 
-const { postLaboratorio, getLaboratorios, getLaboratorioById, getEnsayosUsuario,deleteEnsayo, deleteLaboratorio, getEnsayos, updateLaboratorio } = telecoController;
+const { postLaboratorio, getLaboratorios, getLaboratorio, getEnsayosUsuario, deleteEnsayo, deleteLaboratorio, getEnsayos, updateLaboratorio } = telecoController;
 const { postEnsayoRadio, getEnsayosRadio } = radioController
 const { postEnsayoWifi, getEnsayosWifi } = wifiController
 
@@ -27,29 +27,28 @@ telecoRouter.route("/radio")
     .post(postEnsayoRadio)
 
 // -----------------------------------------------------
+// Endpoints para Gestión
+// -----------------------------------------------------
+
+telecoRouter.route("/laboratorios/:idLaboratorio")
+    .get(getLaboratorio)
+    .post(updateLaboratorio)
+    .delete(deleteLaboratorio)
+
+telecoRouter.route("/ensayos/:idLaboratorio")
+    .get(getEnsayos)
+
+telecoRouter.route("/ensayos/:idEnsayo")
+    .delete(deleteEnsayo)
+
+// -----------------------------------------------------
 // Endpoints con pasaje de parametro en la URL
 // -----------------------------------------------------
 
 telecoRouter.route("/:idLaboratorio")
-    .get(getLaboratorioById)
+    .get(getLaboratorio)
 
 telecoRouter.route("/:idLaboratorio/:idUsuario")
     .get(getEnsayosUsuario)
-
-// -----------------------------------------------------
-// Endpoints para Gestión
-// -----------------------------------------------------
-
-telecoRouter.route("/update")
-    .post(updateLaboratorio)
-
-telecoRouter.route("/ensayo/:idEnsayo")
-    .get(deleteEnsayo)
-
-telecoRouter.route("/delete/laboratorio/:idLaboratorio")
-    .get(deleteLaboratorio)
-
-telecoRouter.route("/ensayos/:idLaboratorio")
-    .get(getEnsayos)
 
 export default telecoRouter

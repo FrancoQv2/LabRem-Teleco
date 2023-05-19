@@ -1,37 +1,44 @@
 USE LabRem_Teleco;
 
 -- -----------------------------------------------------
--- crear ensayo
+-- Crear Ensayo
 -- -----------------------------------------------------
 
 DROP PROCEDURE IF EXISTS sp_crearEnsayo;
 
 DELIMITER //
-CREATE PROCEDURE sp_crearEnsayo(idUsuarioN INT,datosEntradaN JSON,datosSalidaN JSON,idLaboratorioN VARCHAR(6))
+CREATE PROCEDURE sp_crearEnsayo(pIdUsuario INT, pDatosEntrada JSON, pDatosSalida JSON, pIdLaboratorio INT)
 SALIR: BEGIN
-	IF ((idUsuarioN IS NULL) or (datosEntradaN IS NULL) or (idLaboratorioN IS NULL)) THEN
-		SELECT 'alguno de los paramentros es nulo o la fecha u hora ingresada es superior a la fecha actual';
+	IF (pIdUsuario IS NULL) THEN
+		SELECT 'Falta el Id del usuario';
+		LEAVE SALIR;
+	ELSEIF (pDatosEntrada IS NULL) THEN
+		SELECT 'Faltan los datos de entrada';
+		LEAVE SALIR;
+	ELSEIF (pIdLaboratorio IS NULL) THEN
+		SELECT 'Falta el Id del laboratorio';
 		LEAVE SALIR;
 	ELSE
 		START TRANSACTION;
-		INSERT INTO Ensayos(idUsuario,fechaHora,datosEntrada,datosSalida,idLaboratorio) VALUES (idUsuarioN,NOW(),datosEntradaN,datosSalidaN,idLaboratorioN);
+			INSERT INTO Ensayos(idUsuario,fechaHora,datosEntrada,datosSalida,idLaboratorio) VALUES (pIdUsuario,NOW(),pDatosEntrada,pDatosSalida,pIdLaboratorio);
+			SELECT 'Ensayo creado con éxito';
         COMMIT;
     END IF;
 END//
 DELIMITER ;
 
 -- -----------------------------------------------------
--- todas las experiencias realizadas de un laboratorio
+-- Selecciona todas los Ensayos realizadas de un Laboratorio
 -- -----------------------------------------------------
 
 DROP PROCEDURE IF EXISTS sp_dameEnsayos;
 
 DELIMITER //
-CREATE PROCEDURE sp_dameEnsayos(idLaboratorioN VARCHAR(6))
+CREATE PROCEDURE sp_dameEnsayos(pIdLaboratorio INT)
 SALIR: BEGIN
             
-	IF idLaboratorioN IS NULL THEN
-		SELECT 'el codigo de laboratorio es null';
+	IF (pIdLaboratorio IS NULL) THEN
+		SELECT 'Falta el Id del laboratorio';
 		LEAVE SALIR;
     ELSE
 		SELECT 
@@ -41,24 +48,27 @@ SALIR: BEGIN
 			datosEntrada
 			datosSalida
 		FROM Ensayos
-		WHERE idLaboratorio = idLaboratorioN 
+		WHERE idLaboratorio = pIdLaboratorio 
 		ORDER BY fechaHora ASC;
 	END IF;
 END//
 DELIMITER ;
 
 -- -----------------------------------------------------
--- todas las experiencias realizadas por un alumno en particular
+-- Selecciona un Ensayo realizado por un Alumno en particular
 -- -----------------------------------------------------
 
 DROP PROCEDURE IF EXISTS sp_dameEnsayo;
 
 DELIMITER //
-CREATE PROCEDURE sp_dameEnsayo(idUsuarioN INT,idLaboratorioN VARCHAR(6))
+CREATE PROCEDURE sp_dameEnsayo(pIdLaboratorio INT, pIdUsuario INT)
 SALIR: BEGIN
             
-	IF (idUsuarioN IS NULL) OR(idLaboratorioN IS NULL) THEN
-        SELECT 'el id del usuario o el codigo de laboratorio es null';
+	IF (pIdUsuario IS NULL) OR (pIdLaboratorio IS NULL) THEN
+        SELECT 'Falta el Id del usuario';
+		LEAVE SALIR;
+	ELSEIF (pIdLaboratorio IS NULL) THEN
+		SELECT 'Falta el Id del laboratorio';
 		LEAVE SALIR;
     ELSE
 		SELECT 
@@ -67,27 +77,26 @@ SALIR: BEGIN
 			datosEntrada, 
 			datosSalida 
 		FROM Ensayos 
-		WHERE idLaboratorio = idLaboratorioN AND idUsuario = idUsuarioN;
+		WHERE idLaboratorio = pIdLaboratorio AND idUsuario = pIdUsuario;
     END IF;
 END//
 DELIMITER ;
 
 -- -----------------------------------------------------
--- se borra una experencia
+-- Borrado de un Ensayo
 -- -----------------------------------------------------
 
 DROP PROCEDURE IF EXISTS sp_borrarEnsayo;
 
 DELIMITER //
-CREATE PROCEDURE sp_borrarEnsayo(idEnsayoN INT)
+CREATE PROCEDURE sp_borrarEnsayo(pIdEnsayo INT)
 SALIR: BEGIN
-            
-	IF (idEnsayoN IS NULL) THEN
-		SELECT 'el id del ensayo es null';
+	IF (pIdEnsayo IS NULL) THEN
+		SELECT 'Falta el Id del ensayo';
 		LEAVE SALIR;
     ELSE
-		DELETE FROM Ensayos where idEnsayo = idEnsayoN;
-		SELECT 'Ensayo Borrado';
+		DELETE FROM Ensayos where idEnsayo = pIdEnsayo;
+		SELECT 'Ensayo borrado con éxito';
     END IF;
 END//
 DELIMITER ;

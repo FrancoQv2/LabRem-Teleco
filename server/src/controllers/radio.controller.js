@@ -8,7 +8,7 @@ const idLaboratorio = 2
 const queries = {
     getEnsayosRadio: "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
     // getEnsayosRadio: "CALL sp_dameEnsayos(:idLaboratorio);",
-    postEnsayoRadio: "CALL sp_crearEnsayo(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
+    postEnsayoRadio: "CALL sp_crearEnsayo(:idUsuario, :datosEntrada, :datosSalida, :idLaboratorio);"
 }
 
 const radioController = {}

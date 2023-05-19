@@ -1,27 +1,31 @@
 USE LabRem_Teleco;
 
 -- -----------------------------------------------------
--- Crear laboratorio
+-- Crear Laboratorio
 -- -----------------------------------------------------
 
 DROP PROCEDURE IF EXISTS sp_crearLaboratorio;
 
 DELIMITER //
-CREATE PROCEDURE sp_crearLaboratorio(nombreNew VARCHAR(100), descripcionNew VARCHAR(3000))
+CREATE PROCEDURE sp_crearLaboratorio(pNombre VARCHAR(100), pDescripcion TEXT)
 SALIR: BEGIN
-    IF ((nombreNew IS NULL) or (descripcionNew IS NULL)) THEN
-        SELECT 'alguno de los paramentros es nulo';
+    IF (pNombre IS NULL) THEN
+        SELECT 'Falta el nombre';
+        LEAVE SALIR;
+    ELSEIF (pDescripcion IS NULL) THEN
+        SELECT 'Falta la descripción';
         LEAVE SALIR;
     ELSE
         START TRANSACTION;
-        INSERT INTO Laboratorios(area,nombre,descripcion) VALUES (DEFAULT,nombreNew,descripcionNew);
+            INSERT INTO Laboratorios(area,nombre,descripcion) VALUES (DEFAULT,pNombre,pDescripcion);
+            SELECT 'Laboratorio creado con éxito';
         COMMIT;
     END IF;
 END //
 DELIMITER ;
 
 -- -----------------------------------------------------
---  todos los laboratorios en la base de datos
+--  Selección de todos los Laboratorios
 -- -----------------------------------------------------
 
 DROP PROCEDURE IF EXISTS sp_dameLaboratorios;
@@ -40,16 +44,16 @@ END //
 DELIMITER ;
 
 -- -----------------------------------------------------
---  un laboratorio en especial
+--  Selección de un Laboratorio
 -- -----------------------------------------------------
 
 DROP PROCEDURE IF EXISTS sp_dameLaboratorio;
 
 DELIMITER //
-CREATE PROCEDURE sp_dameLaboratorio(idLaboratorioNew VARCHAR(6))
+CREATE PROCEDURE sp_dameLaboratorio(pIdLaboratorio VARCHAR(6))
 SALIR: BEGIN
-    IF idLaboratorioNew IS NULL THEN
-        SELECT 'el codigo de laboratorio es null';
+    IF pIdLaboratorio IS NULL THEN
+        SELECT 'Falta el Id';
         LEAVE SALIR;
     ELSE
         SELECT 
@@ -58,58 +62,87 @@ SALIR: BEGIN
             nombre, 
             descripcion 
         FROM Laboratorios 
-        WHERE idLaboratorio = idLaboratorioNew;
+        WHERE idLaboratorio = pIdLaboratorio;
     END IF;
 END //
 DELIMITER ;
 
 
 -- -----------------------------------------------------
--- se modifica un laboratorio
+-- Modificación de un Laboratorio
 -- -----------------------------------------------------
 
 DROP PROCEDURE IF EXISTS sp_modificarLaboratorio;
 
 DELIMITER //
-CREATE PROCEDURE sp_modificarLaboratorio(idLaboratorioNew VARCHAR(6), areaNew VARCHAR(50), nombreNew VARCHAR(50), descripcionNew VARCHAR(3000))
+CREATE PROCEDURE sp_modificarLaboratorio(pIdLaboratorio INT, pArea VARCHAR(50), pNombre VARCHAR(100), pDescripcion TEXT)
 SALIR: BEGIN
-    IF ((idLaboratorioNew IS NULL) OR (areaNew IS NULL) or (nombreNew IS NULL) or (descripcionNew IS NULL)) THEN
-        SELECT 'alguno de los paramentros es nulo';
+    IF (pIdLaboratorio IS NULL) THEN
+        SELECT 'Falta el Id';
         LEAVE SALIR;
-    ELSEIF NOT EXISTS (SELECT * FROM Laboratorios WHERE idLaboratorio = idLaboratorioNew) THEN
-        SELECT 'no existe un laboratorio con este codigo';
+    ELSEIF (pNombre IS NULL) THEN
+        SELECT 'Falta el nombre';
+        LEAVE SALIR;
+    ELSEIF (pArea IS NULL) THEN
+        SELECT 'Falta el área';
+        LEAVE SALIR;
+    ELSEIF (pDescripcion IS NULL) THEN
+        SELECT 'Falta la descripción';
+        LEAVE SALIR;
+    ELSEIF NOT EXISTS (SELECT * FROM Laboratorios WHERE idLaboratorio = pIdLaboratorio) THEN
+        SELECT 'No existe un laboratorio con este Id';
         LEAVE SALIR;
     ELSE
         START TRANSACTION;
-        UPDATE Laboratorios
-        SET 
-            area = areaNew, 
-            nombre = nombreNew, 
-            descripcion = descripcionNew 
-        WHERE idLaboratorio = idLaboratorioNew;
-        SELECT 'Parámetros correctos';
+            UPDATE Laboratorios
+            SET 
+                area = pArea, 
+                nombre = pNombre, 
+                descripcion = pDescripcion 
+            WHERE idLaboratorio = pIdLaboratorio;
+            SELECT 'Laboratorio modificado con éxito';
         COMMIT;
     END IF;
 END //
 DELIMITER ;
 
 -- -----------------------------------------------------
--- se borra un laboratorio
+-- Borrado de un Laboratorio
 -- -----------------------------------------------------
 
 DROP PROCEDURE IF EXISTS sp_borrarLaboratorio;
 
 DELIMITER //
-CREATE PROCEDURE sp_borrarLaboratorio(idLaboratorioNew VARCHAR(6))
+CREATE PROCEDURE sp_borrarLaboratorio(pIdLaboratorio INT)
 SALIR: BEGIN
-            
-    IF idLaboratorioNew IS NULL THEN
-        SELECT 'el codigo de laboratorio es null';
-        LEAVE SALIR;
-    ELSE
-        DELETE FROM Laboratorios 
-        WHERE idLaboratorio = idLaboratorioNew;
-        SELECT 'Laboratorio Borrado';
+    IF (pIdLaboratorio IS NULL) THEN
+        SELECT 'Falta id de laboratorio';
+    ELSEIF NOT EXISTS (SELECT * FROM Laboratorios WHERE idLaboratorio = pIdLaboratorio) THEN
+        SELECT 'No existe un laboratorio con este Id';
+	ELSE
+		START TRANSACTION;
+			DELETE FROM Laboratorios WHERE idLaboratorio = pIdLaboratorio;
+            SELECT 'OK';
+            SELECT 'Laboratorio borrado con éxito';
+		COMMIT;
     END IF;
 END //
 DELIMITER ;
+
+-- DROP PROCEDURE IF EXISTS sp_borrarLaboratorio;
+
+-- DELIMITER //
+-- CREATE PROCEDURE sp_borrarLaboratorio(pIdLaboratorio INT, OUT mensaje VARCHAR(50))
+-- SALIR: BEGIN
+--     IF (pIdLaboratorio IS NULL) THEN
+--         SET mensaje = 'Falta id de laboratorio!';
+--     ELSEIF EXISTS (SELECT * FROM Laboratorios WHERE idLaboratorio = pIdLaboratorio) THEN
+-- 		START TRANSACTION;
+-- 			DELETE FROM Laboratorios WHERE idLaboratorio = pIdLaboratorio;
+--             SET mensaje = 'Laboratorio Borrado con éxito!';
+-- 		COMMIT;
+-- 	ELSE
+--         SET mensaje = 'No existe este laboratorio!';
+--     END IF;
+-- END //
+-- DELIMITER ;

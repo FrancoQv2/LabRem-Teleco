@@ -2,6 +2,7 @@ import { db } from "../index.js"
 import { QueryTypes } from "sequelize"
 
 import axios from "axios"
+import { response } from "express"
 
 const telecoController = {}
 
@@ -9,16 +10,14 @@ const queries = {
     getLaboratorios: "CALL sp_dameLaboratorios();",
     getEnsayos: "CALL sp_dameEnsayos(:idLaboratorio);",
 
-    getLaboratorioById: "CALL sp_dameLaboratorio(:idLaboratorio);",
-    // getEnsayosUsuario: "SELECT DATE_FORMAT(fechaHora,'%d/%m/%y') AS Fecha, TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio AND idUsuario = :idUsuario;",
-    getEnsayosUsuario: "CALL sp_dameEnsayo(:idUsuario,:idLaboratorio);",
-    
-    postLaboratorio: "INSERT INTO Laboratorios(idLaboratorio,codigo,area,nombre,descripcion) VALUES(:idLaboratorio,:codigo,:area,:nombre,:descripcion);",
+    getLaboratorio: "CALL sp_dameLaboratorio(:idLaboratorio);",
+    getEnsayosUsuario: "CALL sp_dameEnsayo(:idLaboratorio, :idUsuario);",
+  
+    postLaboratorio: "CALL sp_crearLaboratorio(:nombre, :descripcion);",
+    updateLaboratorio: "CALL sp_modificarLaboratorio(:idLaboratorio, :area, :nombre, :imagen, :descripcion);",
 
-    updateLaboratorio: "CALL sp_modificarLaboratorio(:idLaboratorio,:area,:nombre,:imagen,:descripcion);",
-
-    deleteEnsayo: "CALL sp_borrarEnsayo(:idEnsayo);",
-    deleteLaboratorio: "CALL sp_borrarLaboratorio(:idLaboratorio);"
+    deleteLaboratorio: "CALL sp_borrarLaboratorio(:idLaboratorio);",
+    deleteEnsayo: "CALL sp_borrarEnsayo(:idEnsayo);"
 }
 
 // -----------------------------------
@@ -26,92 +25,132 @@ const queries = {
 // -----------------------------------
 
 telecoController.getLaboratorios = async (req, res) => {
-    const data = await db.query(
-        queries.getLaboratorios
-    )
+    console.log("--------------------")
+    console.log(`--> getLaboratorios - ${JSON.stringify(req.params)}`)
 
-    await res.send(data)
+    try {
+        const data = await db.query(
+            queries.getLaboratorios
+        )
+
+        if (!data.length) {
+            await res.status(404).send("No existen laboratorios!")
+        } else {
+            await res.status(200).send(data)
+        }
+    } catch (error) {
+        console.error("-> ERROR getLaboratorios:", error)
+        await res.status(500).send('Error en getLaboratorios!')
+    }
+}
+
+telecoController.getLaboratorio = async (req, res) => {
+    console.log("--------------------")
+    console.log(`--> getLaboratorio - ${JSON.stringify(req.params)}`)
+
+    const { idLaboratorio } = req.params
+
+    try {
+        const data = await db.query(
+            queries.getLaboratorio,
+            {
+                replacements: {
+                    idLaboratorio: idLaboratorio
+                }
+            }
+        )
+
+        if (!data.length) {
+            await res.status(404).send("No existe el laboratorio buscado!")
+        } else {
+            await res.status(200).send(data[0])
+        }
+    } catch (error) {
+        console.error("-> ERROR getLaboratorio:", error)
+        await res.status(500).send('Error en getLaboratorio!')
+    }
 }
 
 telecoController.getEnsayos = async (req, res) => {
-    const { idLaboratorio } = req.params
-
-    const data = await db.query(
-        queries.getEnsayos,
-        {
-            replacements: {
-                idLaboratorio: idLaboratorio
-            }
-        }
-    )
-
-    await res.send(data)
-}
-
-telecoController.getLaboratorioById = async (req, res) => {
-    console.log(`--> getLaboratorioById - ${JSON.stringify(req.params)}`)
-    console.log(`--> getLaboratorioById - ${JSON.stringify(req.query)}`)
+    console.log("--------------------")
+    console.log(`--> getEnsayos - ${JSON.stringify(req.params)}`)
 
     const { idLaboratorio } = req.params
-    console.log(idLaboratorio)
 
-    const response = await db.query(
-        queries.getLaboratorioById,
-        {
-            replacements: {
-                idLaboratorio: idLaboratorio
+    try {
+        const data = await db.query(
+            queries.getEnsayos,
+            {
+                replacements: {
+                    idLaboratorio: idLaboratorio
+                }
             }
-        }
-    )
+        )
 
-    await res.send(response[0])
+        if (!data.length) {
+            await res.status(404).send("No existen ensayos para este laboratorio!")
+        } else {
+            await res.status(200).send(data)
+        }
+    } catch (error) {
+        console.error("-> ERROR getEnsayos:", error)
+        await res.status(500).send('Error en getEnsayos!')
+    }
 }
 
 telecoController.getEnsayosUsuario = async (req, res) => {
+    console.log("--------------------")
     console.log(`--> getEnsayosUsuario - ${JSON.stringify(req.params)}`)
 
     const { idLaboratorio, idUsuario } = req.params
 
-    const response = await db.query(
-        queries.getEnsayosUsuario,
-        {
-            replacements: {
-                idLaboratorio: idLaboratorio,
-                idUsuario: idUsuario,
-            },
-            type: QueryTypes.SELECT
+    try {
+        const data = await db.query(
+            queries.getEnsayosUsuario,
+            {
+                replacements: {
+                    idLaboratorio: idLaboratorio,
+                    idUsuario: idUsuario,
+                }
+            }
+        )
+
+        if (!data.length) {
+            await res.status(404).send("No existen ensayos realizados por este alumno para este laboratorio!")
+        } else {
+            let dataParsed = []
+
+            if (idLaboratorio == 1) {
+                data.map((ensayo, index) => {
+                    const newEnsayo = {}
+                    newEnsayo.index     = index + 1
+                    newEnsayo.Fecha     = ensayo.Fecha
+                    newEnsayo.Hora      = ensayo.Hora
+                    newEnsayo.Azimut    = ensayo.datosEntrada.rangoAzimut
+                    newEnsayo.Elevacion = ensayo.datosEntrada.rangoElevacion
+                    newEnsayo.Signal    = `${ensayo.datosSalida.signalStrength} dBm`
+                    dataParsed.push(newEnsayo)
+                })
+            } else if (idLaboratorio == 2) {
+                data.map((ensayo, index) => {
+                    const newEnsayo = {}
+                    newEnsayo.index = index + 1
+                    newEnsayo.Fecha = ensayo.Fecha
+                    newEnsayo.Hora  = ensayo.Hora
+                    newEnsayo.Modulacion    = ensayo.datosEntrada.tipoModulacion
+                    newEnsayo.Codificacion  = ensayo.datosEntrada.tipoCodificacion
+                    newEnsayo.IntensidadMin = ensayo.datosEntrada.intensidadMin
+                    newEnsayo.IntensidadMax = ensayo.datosEntrada.intensidadMax
+                    dataParsed.push(newEnsayo)
+                })
+            }
+
+            await res.status(200).json(dataParsed)
         }
-    )
-
-    let dataParsed = []
-
-    if (idLaboratorio == 1) {
-
-        response.map((ensayo, index) => {
-            const newEnsayo = {}
-            newEnsayo.index     = index + 1
-            newEnsayo.Fecha     = ensayo.Fecha
-            newEnsayo.Hora      = ensayo.Hora
-            newEnsayo.Azimut    = ensayo.datosEntrada.rangoAzimut
-            newEnsayo.Elevacion = ensayo.datosEntrada.rangoElevacion
-            newEnsayo.Signal    = `${ensayo.datosSalida.signalStrength} dBm`
-            dataParsed.push(newEnsayo)
-        })
-    } else if (idLaboratorio == 2) {
-        response.map((ensayo, index) => {
-            const newEnsayo = {}
-            newEnsayo.index     = index + 1
-            newEnsayo.Fecha     = ensayo.Fecha
-            newEnsayo.Hora      = ensayo.Hora
-            newEnsayo.Modulacion    = ensayo.datosEntrada.tipoModulacion
-            newEnsayo.Codificacion  = ensayo.datosEntrada.tipoCodificacion
-            newEnsayo.IntensidadMin = ensayo.datosEntrada.intensidadMin
-            newEnsayo.IntensidadMax = ensayo.datosEntrada.intensidadMax
-            dataParsed.push(newEnsayo)
-        })
+    } catch (error) {
+        console.error("-> ERROR getEnsayosUsuario:", error)
+        await res.status(500).send('Error en getEnsayosUsuario!')
     }
-
-    await res.status(200).json(dataParsed)
 }
 
 // -----------------------------------
@@ -119,91 +158,38 @@ telecoController.getEnsayosUsuario = async (req, res) => {
 // -----------------------------------
 
 telecoController.postLaboratorio = async (req, res) => {
+    console.log("--------------------")
     console.log(`--> postLaboratorio - ${JSON.stringify(req.body)}`)
 
-    const { idLaboratorio, codigo, area, nombre, descripcion } = req.body
+    const { nombre, descripcion } = req.body
 
     try {
-        db.query(
+        await db.query(
             queries.postLaboratorio,
             {
                 replacements: {
-                    idLaboratorio: idLaboratorio,
-                    codigo: codigo,
-                    area: area,
                     nombre: nombre,
                     descripcion: descripcion,
                 },
                 type: QueryTypes.INSERT
             }
         )
-        res.status(200).json("Parámetros correctos")
+
+        await res.status(200).json(`Laboratorio ${nombre} creado exitosamente!`)
     } catch (error) {
-        res.status(500).send('Something broke!')
         console.error("-> ERROR postLaboratorio:", error)
+        res.status(500).send('Error en postLaboratorio!')
     }
-
-    let dataParsed = []
-
-    if (idLaboratorio == 1) {
-        response.map((ensayo) => {
-            const newEnsayo = {}
-            newEnsayo.Fecha = ensayo.Fecha
-            newEnsayo.Hora = ensayo.Hora
-            newEnsayo.Azimut = ensayo.datosEntrada.rangoAzimut
-            newEnsayo.Elevacion = ensayo.datosEntrada.rangoElevacion
-            dataParsed.push(newEnsayo)
-        })
-    } else if (idLaboratorio == 2) {
-        response.map((ensayo) => {
-            const newEnsayo = {}
-            newEnsayo.Fecha = ensayo.Fecha
-            newEnsayo.Hora = ensayo.Hora
-            newEnsayo.Modulacion = ensayo.datosEntrada.tipoModulacion
-            newEnsayo.Codificacion = ensayo.datosEntrada.tipoCodificacion
-            newEnsayo.IntensidadMin = ensayo.datosEntrada.intensidadMin
-            newEnsayo.IntensidadMax = ensayo.datosEntrada.intensidadMax
-            dataParsed.push(newEnsayo)
-        })
-    }
-    console.log("--------------------------------")
-    console.log(response)
-    console.log("--------------------------------")
-
-    await res.send(JSON.stringify(dataParsed))
-
-    // const { area, nombre, imagen, descripcion } = req.body
-
-    // if (area == null) {
-    //     res.status(400).json("Area nula")
-    // } else if (nombre == null) {
-    //     res.status(400).json("nombre nulo")
-    // } else if (descripcion == null) {
-    //     res.status(400).json("Descripcion nula")
-    // } else {
-    //     try {
-    //         db.query(
-    //             "CALL sp_crearLaboratorio (:area,:nombre,:imagen,:descripcion)",
-    //             {
-    //                 replacements: {
-    //                     area: area,
-    //                     nombre: nombre,
-    //                     imagen: imagen,
-    //                     descripcion: descripcion,
-    //                 }
-    //             }
-    //         )
-    //         res.status(200).json("Parámetros correctos")
-    //     } catch (error) {
-    //         console.error("-> ERROR postLab:", error)
-    //     }
-    // }
 }
 
 telecoController.updateLaboratorio = async (req, res) => {
-    const { idLaboratorio, area, nombre, imagen, descripcion } = req.body
-    const respuesta = await db.query(
-        queries.getLaboratorioById,
+    console.log("--------------------")
+    console.log(`--> updateLaboratorio - ${JSON.stringify(req.body)}`)
+
+    const { idLaboratorio, area, nombre, descripcion } = req.body
+    
+    const response = await db.query(
+        queries.getLaboratorio,
         {
             replacements: {
                 idLaboratorio: idLaboratorio
@@ -211,14 +197,14 @@ telecoController.updateLaboratorio = async (req, res) => {
         }
     )
     
-    if (respuesta[0] == null) {
-        res.status(400).json("codigo no asociado a ningun laboratorio existente")
-    } else if (area == null) {
-        res.status(400).json("Area nula")
-    } else if (nombre == null) {
-        res.status(400).json("nombre nulo")
-    } else if (descripcion == null) {
-        res.status(400).json("Descripcion nula")
+    if (response[0] == null) {
+        res.status(400).json("Código no asociado a ningun laboratorio existente")
+    } else if (area == null || area == "") {
+        res.status(400).json("El área no puede estar vacía!")
+    } else if (nombre == null || nombre == "") {
+        res.status(400).json("El nombre no puede estar vacío!")
+    } else if (descripcion == null || descripcion == "") {
+        res.status(400).json("La descripción no puede estar vacía!")
     } else {
 
         try {
@@ -229,14 +215,14 @@ telecoController.updateLaboratorio = async (req, res) => {
                         idLaboratorio: idLaboratorio,
                         area: area,
                         nombre: nombre,
-                        imagen: imagen,
                         descripcion: descripcion,
                     }
                 }
             )
-            res.status(200).json("modificado correctamente")
+            res.status(200).json("Laboratorio modificado correctamente!")
         } catch (error) {
-            console.error("-> ERROR postLab:", error)
+            res.status(400).json("Error en updateLaboratorio!")
+            console.error("-> ERROR updateLaboratorio:", error)
         }
     }
 }
@@ -244,6 +230,33 @@ telecoController.updateLaboratorio = async (req, res) => {
 // -----------------------------------
 // Métodos DELETE
 // -----------------------------------
+
+telecoController.deleteLaboratorio = async (req, res) => {
+    console.log("--------------------")
+    console.log(`--> deleteLaboratorio - ${JSON.stringify(req.params)}`)
+
+    const { idLaboratorio } = req.params
+
+    try {
+        const response = await db.query(
+            queries.deleteLaboratorio,
+            {
+                replacements: {
+                    idLaboratorio: idLaboratorio
+                }
+            }
+        )
+    
+        if (!response.length) {
+            await res.status(404).send(response)
+        } else {
+            await res.status(200).send(response)
+        }
+    } catch (error) {
+        console.error("-> ERROR deleteLaboratorio:", error)
+        await res.status(500).send('Error en deleteLaboratorio!')
+    }
+}
 
 telecoController.deleteEnsayo = async (req, res) => {
     const { idEnsayo } = req.params
@@ -253,21 +266,6 @@ telecoController.deleteEnsayo = async (req, res) => {
         {
             replacements: {
                 idEnsayo: idEnsayo
-            }
-        }
-    )
-
-    await res.send(response[0])
-}
-
-telecoController.deleteLaboratorio = async (req, res) => {
-    const { idLaboratorio } = req.params
-
-    const response = await db.query(
-        queries.deleteLaboratorio,
-        {
-            replacements: {
-                idLaboratorio: idLaboratorio
             }
         }
     )
