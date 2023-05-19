@@ -7,6 +7,9 @@ export const dbConnection = new Sequelize(
     {
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
-        dialect: process.env.DB_DIALECT
+        dialect: process.env.DB_DIALECT,
+        dialectOptions: {
+            multipleStatements: true
+        }
     }
 );

@@ -7,8 +7,8 @@ const idLaboratorio = 2
 
 const queries = {
     getEnsayosRadio: "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
-    // postEnsayoRadio: "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
-    postEnsayoRadio: "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
+    // getEnsayosRadio: "CALL sp_dameEnsayos(:idLaboratorio);",
+    postEnsayoRadio: "CALL sp_crearEnsayo(:idUsuario, :datosEntrada, :datosSalida, :idLaboratorio);"
 }
 
 const radioController = {}
@@ -30,13 +30,13 @@ radioController.getEnsayosRadio = async (req, res) => {
     let dataParsed = []
     data.map((ensayo) => {
         const newEnsayo = {}
-        newEnsayo.Usuario = ensayo.idUsuario
-        newEnsayo.Fecha = ensayo.Fecha
-        newEnsayo.Hora = ensayo.Hora
-        newEnsayo.intensidadMin = ensayo.datosEntrada.intensidadMin
-        newEnsayo.intensidadMax = ensayo.datosEntrada.intensidadMax
-        newEnsayo.tipoModulacion = ensayo.datosEntrada.tipoModulacion
-        newEnsayo.tipoCodificacion = ensayo.datosEntrada.tipoCodificacion
+        newEnsayo.Usuario   = ensayo.idUsuario
+        newEnsayo.Fecha     = ensayo.Fecha
+        newEnsayo.Hora      = ensayo.Hora
+        newEnsayo.intensidadMin     = ensayo.datosEntrada.intensidadMin
+        newEnsayo.intensidadMax     = ensayo.datosEntrada.intensidadMax
+        newEnsayo.tipoModulacion    = ensayo.datosEntrada.tipoModulacion
+        newEnsayo.tipoCodificacion  = ensayo.datosEntrada.tipoCodificacion
         dataParsed.push(newEnsayo)
     })
 
@@ -90,16 +90,16 @@ radioController.postEnsayoRadio = (req, res) => {
         const modulaciones = ["4-QAM","8-QAM","16-QAM","PSK","FSK","QPSK"]
 
         const datosEntrada = {
-            tipoModulacion: modulaciones[tipoModulacion-1],
-            tipoCodificacion: tipoCodificacion,
-            intensidadMax: intensidadMax,
-            intensidadMin: intensidadMin
+            tipoModulacion:     modulaciones[tipoModulacion-1],
+            tipoCodificacion:   tipoCodificacion,
+            intensidadMax:      intensidadMax,
+            intensidadMin:      intensidadMin
         }
 
         // Estos datos se deben obtener
         const datosSalida = {
-            intensidad: 10, // dBm
-            tasaError: 0.05 // cantidad de bits con error / bits transmitidos
+            intensidad: 10,     // dBm
+            tasaError:  0.05    // cantidad de bits con error / bits transmitidos
         }
 
         try {
@@ -107,10 +107,10 @@ radioController.postEnsayoRadio = (req, res) => {
                 queries.postEnsayoRadio,
                 {
                     replacements: {
-                        idUsuario: idUsuario,
-                        datosEntrada: JSON.stringify(datosEntrada),
-                        datosSalida: JSON.stringify(datosSalida),
-                        idLaboratorio: idLaboratorio
+                        idUsuario:      idUsuario,
+                        datosEntrada:   JSON.stringify(datosEntrada),
+                        datosSalida:    JSON.stringify(datosSalida),
+                        idLaboratorio:  idLaboratorio
                     },
                     type: QueryTypes.INSERT
                 }

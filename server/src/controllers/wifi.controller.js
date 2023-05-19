@@ -1,15 +1,15 @@
 import { db } from "../index.js"
 import { QueryTypes } from "sequelize"
 
-import { postArduino } from "../lib/arduino.js"
+import { postArduino, getArduino } from "../lib/arduino.js"
 import { getStatsBullet } from "../lib/bullet.js";
 
 const idLaboratorio = 1
 
 const queries = {
     getEnsayosWifi: "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
-    // postEnsayoWifi: "INSERT INTO Ensayos(idUsuario,datosEntrada,datosSalida,idLaboratorio) VALUES(:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
-    postEnsayoWifi: "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);"
+    // getEnsayosWifi: "CALL sp_dameEnsayos(:idLaboratorio);",
+    postEnsayoWifi: "CALL sp_crearEnsayo(:idUsuario, :datosEntrada, :datosSalida, :idLaboratorio);"
 }
 
 const wifiController = {}
@@ -40,24 +40,23 @@ wifiController.getEnsayosWifi = async (req, res) => {
     let dataParsed = []
     data.map((ensayo) => {
         const newEnsayo = {}
-        newEnsayo.Usuario = ensayo.idUsuario
-        newEnsayo.Fecha = ensayo.Fecha
-        newEnsayo.Hora = ensayo.Hora
-        newEnsayo.Azimut = ensayo.datosEntrada.rangoAzimut
+        newEnsayo.Usuario   = ensayo.idUsuario
+        newEnsayo.Fecha     = ensayo.Fecha
+        newEnsayo.Hora      = ensayo.Hora
+        newEnsayo.Azimut    = ensayo.datosEntrada.rangoAzimut
         newEnsayo.Elevacion = ensayo.datosEntrada.rangoElevacion
-        newEnsayo.Signal = ensayo.datosSalida.signalStrength
+        newEnsayo.Signal    = ensayo.datosSalida.signalStrength
         dataParsed.push(newEnsayo)
     })
 
     await res.status(200).send(dataParsed)
 }
 
-// ------------------------------------------------------
-// POST postEnsayoWifi
-// ------------------------------------------------------
-
+/**
+ * 
+ */
 wifiController.postEnsayoWifi = async (req, res) => {
-    console.log(`---\n--> postEnsayoWifi - ${JSON.stringify(req.body)}\n---`)
+    console.log(`-\n--> postEnsayoWifi - ${JSON.stringify(req.body)}\n---`)
 
     const { idUsuario, elevacion, azimut } = req.body
 
@@ -69,50 +68,74 @@ wifiController.postEnsayoWifi = async (req, res) => {
             .send("Azimut incorrecta")
     } else {
 
-    const datosEntrada = {
-      rangoElevacion: elevacion,
-      rangoAzimut: azimut,
-    };
+        const datosEntrada = {
+            rangoElevacion: elevacion,
+            rangoAzimut: azimut
+        }
 
-    const datosSalida = {
-      rangoElevacion: elevacion,
-      rangoAzimut: azimut,
-    };
-    const url='http://192.168.100.75:3031/api/control/arduino';//cambiar por ip arduino
-    
-    const body={
-      "Estado" : [2,true,true],
-      "Analogico" : [azimut,elevacion]
-    };
-    let respuestaGet;
-    let Msj='';
-    try {
-      const respuestaPost = axios.post(`${url}/1`,body);
-      let i=0;
-      do {
-        respuestaGet = await axios.get(`${url}/${i}`);
-        await delay(3000);
-        i = i+1;
-      } while (respuestaGet.data.Estado[2]);
-      console.log(respuestaGet.data.Error);
-      switch (respuestaGet.data.Error) {
-        case 0:
-          Msj="laboratorio ok";
-          break;
-        case 1:
-          Msj="Error en el angulo limite de azimut";
-          break;
-        case 2:
-          Msj="Error en el angulo limite de elevacion";
-          break;
-        default:
-          Msj="Error de laboratorio incorrecto";
-          break;
-      }
-      
-      res.status(200).json(Msj);
-    } catch (error) {
-      console.error("-> ERROR postEnsayoWifi:", error);
+        // const statsBullet = await getStatsBullet()
+
+        const datosSalida = {
+            // signalStrength: statsBullet.wireless.signal
+            signalStrength: -90 
+        }
+
+        // const resArduino = await getArduino()
+        // console.log("--asd")
+        // console.log(resArduino.status)
+        
+        try {
+            let resArduino = await postArduino(azimut, elevacion)
+            console.log(resArduino.data.msg)
+            
+
+            // switch (resArduino.data.Error) {
+            //     case 0:
+            //         db.query(
+            //             queries.postEnsayoWifi,
+            //             {
+            //                 replacements: {
+            //                     idUsuario: idUsuario,
+            //                     datosEntrada: JSON.stringify(datosEntrada),
+            //                     datosSalida: JSON.stringify(datosSalida),
+            //                     idLaboratorio: idLaboratorio
+            //                 },
+            //                 type: QueryTypes.INSERT
+            //             }
+            //         )
+            //         msg = "Laboratorio OK y datos guardados en base de datos"
+            //         break
+            //     case 1:
+            //         msg = "Error en el angulo limite de azimut"
+            //         break
+            //     case 2:
+            //         msg = "Error en el angulo limite de elevacion"
+            //         break
+            //     default:
+            //         msg = "Error de  laboratorio incorrecto"
+            //         break
+            // }
+
+            // res.status(200).json({msg: msg});
+
+
+            db.query(
+                queries.postEnsayoWifi,
+                {
+                    replacements: {
+                        idUsuario:      idUsuario,
+                        datosEntrada:   JSON.stringify(datosEntrada),
+                        datosSalida:    JSON.stringify(datosSalida),
+                        idLaboratorio:  idLaboratorio
+                    }
+                }
+            )
+
+            res.status(200).json({ msg: "Parámetros correctos. Guardado en DB"})
+        } catch (error) {
+            res.status(500).json({ msg: "Error en postEnsayoWifi!"})
+            console.error("-> ERROR postEnsayoWifi:", error)
+        }
     }
 }
 

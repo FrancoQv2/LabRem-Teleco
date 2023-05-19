@@ -7,7 +7,7 @@ import expressServer from "express";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import cors from "cors";
-import cookieParser from "cookie-parser"
+// import cookieParser from "cookie-parser"
 
 import { dbConnection } from "./db/dbconfig.js"
 
@@ -20,7 +20,7 @@ const PORT = process.env.SERVER_PORT || 3000;
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cookieParser())
+// app.use(cookieParser())
 app.use(cors());
 
 app.use("/api/teleco", telecoRouter);
@@ -32,9 +32,7 @@ app.use("/api/teleco", telecoRouter);
 app.listen(PORT, () => {
   console.log(`Server on container port ${PORT}`);
   console.log(`Server on localhost port ${process.env.LOCALHOST_PORT}`);
-  console.log("----------------------");
+  // console.log("----------------------");
 });
-
-
 
 export const db = dbConnection;
