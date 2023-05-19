@@ -261,16 +261,25 @@ telecoController.deleteLaboratorio = async (req, res) => {
 telecoController.deleteEnsayo = async (req, res) => {
     const { idEnsayo } = req.params
 
-    const response = await db.query(
-        queries.deleteEnsayo,
-        {
-            replacements: {
-                idEnsayo: idEnsayo
+    try {
+        const response = await db.query(
+            queries.deleteEnsayo,
+            {
+                replacements: {
+                    idEnsayo: idEnsayo
+                }
             }
+        )
+    
+        if (!response.length) {
+            await res.status(404).send(response[0])
+        } else {
+            await res.status(200).send(response[0])
         }
-    )
-
-    await res.send(response[0])
+    } catch (error) {
+        console.error("-> ERROR deleteEnsayo:", error)
+        await res.status(500).send('Error en deleteEnsayo!')
+    }
 }
 
 export { telecoController }
