@@ -1,5 +1,4 @@
 import { db } from "../index.js"
-import { QueryTypes } from "sequelize"
 
 import { postArduino, getArduino } from "../lib/arduino.js"
 import { getStatsBullet } from "../lib/bullet.js";
@@ -7,8 +6,7 @@ import { getStatsBullet } from "../lib/bullet.js";
 const idLaboratorio = 1
 
 const queries = {
-    getEnsayosWifi: "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
-    // getEnsayosWifi: "CALL sp_dameEnsayos(:idLaboratorio);",
+    getEnsayosWifi: "CALL sp_dameEnsayosWifi();",
     postEnsayoWifi: "CALL sp_crearEnsayo(:idUsuario, :datosEntrada, :datosSalida, :idLaboratorio);"
 }
 
@@ -18,25 +16,13 @@ const wifiController = {}
  * 
  */
 wifiController.getEnsayosWifi = async (req, res) => {
-    // console.log("-----");
-    // console.log(req.path);
-    // console.log(req.originalUrl);
-    // console.log(req.params);
-    // console.log(req.query);
-    // console.log("-----");
-
-    // const { idLaboratorio } = req.query
+    console.log("--------------------")
+    console.log(`--> getEnsayosWifi - ${JSON.stringify(req.params)}`)
 
     const data = await db.query(
-        queries.getEnsayosWifi,
-        {
-            replacements: {
-                idLaboratorio: idLaboratorio
-            },
-            type: QueryTypes.SELECT
-        }
+        queries.getEnsayosWifi
     )
-
+    
     let dataParsed = []
     data.map((ensayo) => {
         const newEnsayo = {}
@@ -48,7 +34,7 @@ wifiController.getEnsayosWifi = async (req, res) => {
         newEnsayo.Signal    = ensayo.datosSalida.signalStrength
         dataParsed.push(newEnsayo)
     })
-
+    
     await res.status(200).send(dataParsed)
 }
 
@@ -77,17 +63,17 @@ wifiController.postEnsayoWifi = async (req, res) => {
 
         const datosSalida = {
             // signalStrength: statsBullet.wireless.signal
-            signalStrength: -90 
+            signalStrength: -90
         }
 
         // const resArduino = await getArduino()
         // console.log("--asd")
         // console.log(resArduino.status)
-        
+
         try {
             let resArduino = await postArduino(azimut, elevacion)
             console.log(resArduino.data.msg)
-            
+
 
             // switch (resArduino.data.Error) {
             //     case 0:
@@ -123,57 +109,20 @@ wifiController.postEnsayoWifi = async (req, res) => {
                 queries.postEnsayoWifi,
                 {
                     replacements: {
-                        idUsuario:      idUsuario,
-                        datosEntrada:   JSON.stringify(datosEntrada),
-                        datosSalida:    JSON.stringify(datosSalida),
-                        idLaboratorio:  idLaboratorio
+                        idUsuario: idUsuario,
+                        datosEntrada: JSON.stringify(datosEntrada),
+                        datosSalida: JSON.stringify(datosSalida),
+                        idLaboratorio: idLaboratorio
                     }
                 }
             )
 
-            res.status(200).json({ msg: "Parámetros correctos. Guardado en DB"})
+            res.status(200).json({ msg: "Parámetros correctos. Guardado en DB" })
         } catch (error) {
-            res.status(500).json({ msg: "Error en postEnsayoWifi!"})
+            res.status(500).json({ msg: "Error en postEnsayoWifi!" })
             console.error("-> ERROR postEnsayoWifi:", error)
         }
     }
 }
 
-wifiController.postEnsayoWifisave = async (req, res) => {
-  const { idUsuario, elevacion, azimut } = req.body;
-
-  if (elevacion < 0 || elevacion > 90) {
-    res.status(400).json("Elevación incorrecta");
-  } else if (azimut < 0 || azimut > 90) {
-    res.status(400).json("Azimut incorrecta");
-  } else {
-
-    const datosEntrada = {
-      rangoElevacion: elevacion,
-      rangoAzimut: azimut,
-    };
-
-    const datosSalida = {
-      rangoElevacion: elevacion,
-      rangoAzimut: azimut,
-    };
-    try {
-          sequelize.query(
-            "CALL sp_crearEnsayo (:idUsuario,:datosEntrada,:datosSalida,:idLaboratorio);",
-            {
-              replacements: {
-                idUsuario: idUsuario,
-                datosEntrada: JSON.stringify(datosEntrada),
-                datosSalida: JSON.stringify(datosSalida),
-                idLaboratorio: idLaboratorio,
-              }
-            }
-          );
-      
-      res.status(200).json("guardado en base de datos");
-    } catch (error) {
-      console.error("-> ERROR postEnsayoWifi:", error);
-    }
-  }
-};
 export { wifiController };

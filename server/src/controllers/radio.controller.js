@@ -1,13 +1,11 @@
 import { db } from "../index.js"
-import { QueryTypes } from "sequelize"
 
 import axios from "axios"
 
 const idLaboratorio = 2
 
 const queries = {
-    getEnsayosRadio: "SELECT idUsuario, DATE(fechaHora) AS Fecha, TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora, datosEntrada, datosSalida FROM Ensayos WHERE idLaboratorio = :idLaboratorio;",
-    // getEnsayosRadio: "CALL sp_dameEnsayos(:idLaboratorio);",
+    getEnsayosRadio: "CALL sp_dameEnsayosRadio();",
     postEnsayoRadio: "CALL sp_crearEnsayo(:idUsuario, :datosEntrada, :datosSalida, :idLaboratorio);"
 }
 
@@ -17,14 +15,11 @@ const radioController = {}
  * 
  */
 radioController.getEnsayosRadio = async (req, res) => {
+    console.log("--------------------")
+    console.log(`--> getEnsayosRadio - ${JSON.stringify(req.params)}`)
+
     const data = await db.query(
-        queries.getEnsayosRadio,
-        {
-            replacements: {
-                idLaboratorio: idLaboratorio
-            },
-            type: QueryTypes.SELECT
-        }
+        queries.getEnsayosRadio
     )
 
     let dataParsed = []
@@ -111,12 +106,12 @@ radioController.postEnsayoRadio = (req, res) => {
                         datosEntrada:   JSON.stringify(datosEntrada),
                         datosSalida:    JSON.stringify(datosSalida),
                         idLaboratorio:  idLaboratorio
-                    },
-                    type: QueryTypes.INSERT
+                    }
                 }
             )
             res.status(200).send("Parámetros correctos")
         } catch (error) {
+            res.status(500).json({ msg: "Error en postEnsayoRadio!" })
             console.error("-> ERROR postEnsayoRadio:", error)
         }
     }

@@ -18,9 +18,9 @@ telecoRouter.route("/")
     .get(getLaboratorios)
     .post(postLaboratorio)
 
-telecoRouter.route("/wifi").post(postEnsayoWifi);
-
-telecoRouter.route("/wifisave").post(postEnsayoWifisave);
+telecoRouter.route("/wifi")
+    .get(getEnsayosWifi)
+    .post(postEnsayoWifi)
 
 telecoRouter.route("/radio")
     .get(getEnsayosRadio)

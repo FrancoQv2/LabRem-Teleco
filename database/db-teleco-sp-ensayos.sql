@@ -45,7 +45,7 @@ SALIR: BEGIN
 			idEnsayo, 
 			DATE_FORMAT(fechaHora,'%d/%m/%y') AS Fecha, 
 			TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora,
-			datosEntrada
+			datosEntrada,
 			datosSalida
 		FROM Ensayos
 		WHERE idLaboratorio = pIdLaboratorio 
@@ -55,13 +55,13 @@ END//
 DELIMITER ;
 
 -- -----------------------------------------------------
--- Selecciona un Ensayo realizado por un Alumno en particular
+-- Selecciona los Ensayos realizados por un Alumno en particular
 -- -----------------------------------------------------
 
-DROP PROCEDURE IF EXISTS sp_dameEnsayo;
+DROP PROCEDURE IF EXISTS sp_dameEnsayosUsuario;
 
 DELIMITER //
-CREATE PROCEDURE sp_dameEnsayo(pIdLaboratorio INT, pIdUsuario INT)
+CREATE PROCEDURE sp_dameEnsayosUsuario(pIdLaboratorio INT, pIdUsuario INT)
 SALIR: BEGIN
             
 	IF (pIdUsuario IS NULL) OR (pIdLaboratorio IS NULL) THEN
@@ -98,5 +98,49 @@ SALIR: BEGIN
 		DELETE FROM Ensayos where idEnsayo = pIdEnsayo;
 		SELECT 'Ensayo borrado con éxito';
     END IF;
+END//
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- Selecciona todas los Ensayos del Laboratorio de WiFi
+-- -----------------------------------------------------
+
+DROP PROCEDURE IF EXISTS sp_dameEnsayosWifi;
+
+DELIMITER //
+CREATE PROCEDURE sp_dameEnsayosWifi()
+SALIR: BEGIN
+	SELECT 
+		idEnsayo, 
+        idUsuario,
+		DATE_FORMAT(fechaHora,'%d/%m/%y') AS Fecha, 
+		TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora,
+		datosEntrada,
+		datosSalida
+	FROM Ensayos
+	WHERE idLaboratorio = 1
+	ORDER BY fechaHora ASC;
+END//
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- Selecciona todas los Ensayos del Laboratorio de Radio
+-- -----------------------------------------------------
+
+DROP PROCEDURE IF EXISTS sp_dameEnsayosRadio;
+
+DELIMITER //
+CREATE PROCEDURE sp_dameEnsayosRadio()
+SALIR: BEGIN
+	SELECT 
+		idEnsayo, 
+        idUsuario,
+		DATE_FORMAT(fechaHora,'%d/%m/%y') AS Fecha, 
+		TIME(CONVERT_TZ(fechaHora,'+00:00','-03:00')) AS Hora,
+		datosEntrada,
+		datosSalida
+	FROM Ensayos
+	WHERE idLaboratorio = 2
+	ORDER BY fechaHora ASC;
 END//
 DELIMITER ;

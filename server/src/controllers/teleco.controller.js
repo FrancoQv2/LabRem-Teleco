@@ -11,10 +11,10 @@ const queries = {
     getEnsayos: "CALL sp_dameEnsayos(:idLaboratorio);",
 
     getLaboratorio: "CALL sp_dameLaboratorio(:idLaboratorio);",
-    getEnsayosUsuario: "CALL sp_dameEnsayo(:idLaboratorio, :idUsuario);",
+    getEnsayosUsuario: "CALL sp_dameEnsayosUsuario(:idLaboratorio, :idUsuario);",
   
     postLaboratorio: "CALL sp_crearLaboratorio(:nombre, :descripcion);",
-    updateLaboratorio: "CALL sp_modificarLaboratorio(:idLaboratorio, :area, :nombre, :imagen, :descripcion);",
+    updateLaboratorio: "CALL sp_modificarLaboratorio(:idLaboratorio, :area, :nombre, :descripcion);",
 
     deleteLaboratorio: "CALL sp_borrarLaboratorio(:idLaboratorio);",
     deleteEnsayo: "CALL sp_borrarEnsayo(:idEnsayo);"
