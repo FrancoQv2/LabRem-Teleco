@@ -7,7 +7,7 @@ USE LabRem_Teleco;
 DROP TRIGGER IF EXISTS tg_crearLaboratorio;
 
 DELIMITER //
-CREATE TRIGGER  tg_crearLaboratorio 
+CREATE TRIGGER tg_crearLaboratorio 
 AFTER INSERT ON Laboratorios 
 FOR EACH ROW
 BEGIN
@@ -67,7 +67,8 @@ BEGIN
         NOW(),
         SUBSTRING_INDEX(USER(),'@',1),
         SUBSTRING_INDEX(USER(),'@',-1),
-        OLD.idLaboratorio,OLD.area,
+        OLD.idLaboratorio,
+        OLD.area,
         OLD.nombre,
         OLD.descripcion
     );
@@ -106,7 +107,7 @@ DELIMITER ;
 DROP TRIGGER IF EXISTS tg_crearEnsayo;
 
 DELIMITER //
-CREATE TRIGGER  tg_crearEnsayo 
+CREATE TRIGGER tg_crearEnsayo 
 AFTER INSERT ON Ensayos 
 FOR EACH ROW
 BEGIN

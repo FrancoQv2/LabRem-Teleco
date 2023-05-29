@@ -11,9 +11,10 @@ const queries = {
 
 const radioController = {}
 
-/**
- * 
- */
+// -----------------------------------
+// Métodos GET
+// -----------------------------------
+
 radioController.getEnsayosRadio = async (req, res) => {
     console.log("--------------------")
     console.log(`--> getEnsayosRadio - ${JSON.stringify(req.params)}`)

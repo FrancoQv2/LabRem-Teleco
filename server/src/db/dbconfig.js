@@ -1,4 +1,4 @@
-import Sequelize from "sequelize";
+import Sequelize from "sequelize"
 
 export const dbConnection = new Sequelize(
     process.env.DB_NAME,
@@ -12,4 +12,4 @@ export const dbConnection = new Sequelize(
             multipleStatements: true
         }
     }
-);
+)

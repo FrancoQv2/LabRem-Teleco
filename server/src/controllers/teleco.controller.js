@@ -1,5 +1,4 @@
 import { db } from "../index.js"
-import { QueryTypes } from "sequelize"
 
 import axios from "axios"
 import { response } from "express"
@@ -162,23 +161,29 @@ telecoController.postLaboratorio = async (req, res) => {
     console.log(`--> postLaboratorio - ${JSON.stringify(req.body)}`)
 
     const { nombre, descripcion } = req.body
+  
+    if (nombre == null || nombre == "") {
+        res.status(400).json("El nombre no puede estar vacío!")
+    } else if (descripcion == null || descripcion == "") {
+        res.status(400).json("La descripción no puede estar vacía!")
+    } else {
+        try {
+            db.query(
+                queries.postLaboratorio,
+                {
+                    replacements: {
+                        nombre: nombre,
+                        descripcion: descripcion,
+                    }
+                }
+            )
 
-    try {
-        await db.query(
-            queries.postLaboratorio,
-            {
-                replacements: {
-                    nombre: nombre,
-                    descripcion: descripcion,
-                },
-                type: QueryTypes.INSERT
-            }
-        )
-
-        await res.status(200).json(`Laboratorio ${nombre} creado exitosamente!`)
-    } catch (error) {
-        console.error("-> ERROR postLaboratorio:", error)
-        res.status(500).send('Error en postLaboratorio!')
+            res.status(200).json(`Laboratorio '${nombre}' creado exitosamente!`)
+        
+        } catch (error) {
+            console.error("-> ERROR postLaboratorio:", error)
+            res.status(500).send('Error en postLaboratorio!')
+        }
     }
 }
 
@@ -221,8 +226,8 @@ telecoController.updateLaboratorio = async (req, res) => {
             )
             res.status(200).json("Laboratorio modificado correctamente!")
         } catch (error) {
-            res.status(400).json("Error en updateLaboratorio!")
             console.error("-> ERROR updateLaboratorio:", error)
+            res.status(400).json("Error en updateLaboratorio!")
         }
     }
 }

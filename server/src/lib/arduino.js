@@ -2,37 +2,14 @@ import axios from "axios"
 import { delay } from "./delay.js"
 
 // const URL_ARDUINO = "http://192.168.100.75:3031/api/control/arduino"
-const URL_ARDUINO = "http://172.23.12.125:5033" // IP de wsl vista desde dev-teleco
-
-export async function queryArduino(azimut, elevacion) {
-
-    const body = {
-        "Estado": [2, true, true],
-        "Analogico": [azimut, elevacion]
-    }
-
-    let respuestaGet
-    let msg = ''
-
-    const respuestaPost = postArduino(azimut, elevacion)
-    let i = 0
-
-    do {
-        respuestaGet = await axios.get(`${URL_ARDUINO}/api/teleco`)
-        await delay(3000)
-        i = i + 1
-    } while (respuestaGet.data.Estado[2])
-
-    console.log(respuestaGet.data.Error)
-
-    return respuestaGet
-}
+// const URL_ARDUINO = "http://172.23.12.125:5033" // IP de wsl vista desde dev-teleco
+const URL_ARDUINO = "http://172.25.64.1:5033" // IP de wsl vista desde dev-teleco (cat /etc/resolv.conf en wsl)
 
 export async function postArduino(azimut, elevacion) {
     let respuestaPost
 
     const body = {
-        "Estado": [2, true, true],
+        "Estado": [2, true, true],          // [ Laboratorio (Teleco), Sub Laboratorio (WiFi), Inicio del experimento ]
         "Analogico": [azimut, elevacion]
     }
 
@@ -55,3 +32,27 @@ export async function getArduino() {
 
     return response
 }
+
+// export async function queryArduino(azimut, elevacion) {
+
+//     const body = {
+//         "Estado": [2, true, true],
+//         "Analogico": [azimut, elevacion]
+//     }
+
+//     let respuestaGet
+//     let msg = ''
+
+//     const respuestaPost = postArduino(azimut, elevacion)
+//     let i = 0
+
+//     do {
+//         respuestaGet = await axios.get(`${URL_ARDUINO}/api/teleco`)
+//         await delay(3000)
+//         i = i + 1
+//     } while (respuestaGet.data.Estado[2])
+
+//     console.log(respuestaGet.data.Error)
+
+//     return respuestaGet
+// }
