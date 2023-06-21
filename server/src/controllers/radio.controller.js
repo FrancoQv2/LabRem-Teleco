@@ -19,30 +19,37 @@ radioController.getEnsayosRadio = async (req, res) => {
     console.log("--------------------")
     console.log(`--> getEnsayosRadio - ${JSON.stringify(req.params)}`)
 
-    const data = await db.query(
-        queries.getEnsayosRadio
-    )
+    try {
+        const data = await db.query(
+            queries.getEnsayosRadio
+        )
 
-    let dataParsed = []
-    data.map((ensayo) => {
-        const newEnsayo = {}
-        newEnsayo.Usuario   = ensayo.idUsuario
-        newEnsayo.Fecha     = ensayo.Fecha
-        newEnsayo.Hora      = ensayo.Hora
-        newEnsayo.intensidadMin     = ensayo.datosEntrada.intensidadMin
-        newEnsayo.intensidadMax     = ensayo.datosEntrada.intensidadMax
-        newEnsayo.tipoModulacion    = ensayo.datosEntrada.tipoModulacion
-        newEnsayo.tipoCodificacion  = ensayo.datosEntrada.tipoCodificacion
-        dataParsed.push(newEnsayo)
-    })
+        let dataParsed = []
+        data.map((ensayo) => {
+            const newEnsayo = {}
+            newEnsayo.Usuario   = ensayo.idUsuario
+            newEnsayo.Fecha     = ensayo.Fecha
+            newEnsayo.Hora      = ensayo.Hora
+            newEnsayo.intensidadMin     = ensayo.datosEntrada.intensidadMin
+            newEnsayo.intensidadMax     = ensayo.datosEntrada.intensidadMax
+            newEnsayo.tipoModulacion    = ensayo.datosEntrada.tipoModulacion
+            newEnsayo.tipoCodificacion  = ensayo.datosEntrada.tipoCodificacion
+            dataParsed.push(newEnsayo)
+        })
 
-    await res.send(dataParsed)
+        await res.send(dataParsed)
+    } catch (error) {
+        res.status(404).send("No hay ensayos realizados en este laboratorio!")
+    }
 }
 
-/**
- * 
- */
+// -----------------------------------
+// Métodos POST
+// -----------------------------------
+
 radioController.postEnsayoRadio = (req, res) => {
+    console.log(`-\n--> postEnsayoRadio - ${JSON.stringify(req.body)}\n---`)
+
     const {
         idUsuario,
         tipoModulacion,
@@ -52,12 +59,12 @@ radioController.postEnsayoRadio = (req, res) => {
     } = req.body
 
     if (
-        tipoModulacion !== 1 &&   // "4-QAM"
-        tipoModulacion !== 2 &&   // "8-QAM"
-        tipoModulacion !== 3 &&   // "16-QAM"
-        tipoModulacion !== 4 &&   // "PSK"
-        tipoModulacion !== 5 &&   // "FSK"
-        tipoModulacion !== 6      // "QPSK"
+        tipoModulacion !== "4-QAM"  &&
+        tipoModulacion !== "8-QAM"  &&
+        tipoModulacion !== "16-QAM" &&
+        tipoModulacion !== "PSK"    &&
+        tipoModulacion !== "FSK"    &&
+        tipoModulacion !== "QPSK"
     ) {
         res.status(400).json("Tipo de Modulacion Incorrecta")
     } else if (
@@ -83,10 +90,8 @@ radioController.postEnsayoRadio = (req, res) => {
     ) {
         res.status(400).json("La Intensidad Máxima no es válida")
     } else {
-        const modulaciones = ["4-QAM","8-QAM","16-QAM","PSK","FSK","QPSK"]
-
         const datosEntrada = {
-            tipoModulacion:     modulaciones[tipoModulacion-1],
+            tipoModulacion:     tipoModulacion,
             tipoCodificacion:   tipoCodificacion,
             intensidadMax:      intensidadMax,
             intensidadMin:      intensidadMin
@@ -95,7 +100,7 @@ radioController.postEnsayoRadio = (req, res) => {
         // Estos datos se deben obtener
         const datosSalida = {
             intensidad: 10,     // dBm
-            tasaError:  0.05    // cantidad de bits con error / bits transmitidos
+            tasaError: 0.05     // cantidad de bits con error / bits transmitidos
         }
 
         try {
@@ -110,10 +115,10 @@ radioController.postEnsayoRadio = (req, res) => {
                     }
                 }
             )
-            res.status(200).send("Parámetros correctos")
+            res.status(200).send("Parámetros correctos. Guardado en DB")
         } catch (error) {
-            res.status(500).json({ msg: "Error en postEnsayoRadio!" })
             console.error("-> ERROR postEnsayoRadio:", error)
+            res.status(500).json("Falló el ensayo Radio!")
         }
     }
 }

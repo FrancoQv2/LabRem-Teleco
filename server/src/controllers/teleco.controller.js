@@ -143,6 +143,7 @@ telecoController.getEnsayosUsuario = async (req, res) => {
                     dataParsed.push(newEnsayo)
                 })
             }
+            console.log(dataParsed);
 
             await res.status(200).json(dataParsed)
         }

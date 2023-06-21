@@ -20,23 +20,27 @@ wifiController.getEnsayosWifi = async (req, res) => {
     console.log("--------------------")
     console.log(`--> getEnsayosWifi - ${JSON.stringify(req.params)}`)
 
-    const data = await db.query(
-        queries.getEnsayosWifi
-    )
-    
-    let dataParsed = []
-    data.map((ensayo) => {
-        const newEnsayo = {}
-        newEnsayo.Usuario   = ensayo.idUsuario
-        newEnsayo.Fecha     = ensayo.Fecha
-        newEnsayo.Hora      = ensayo.Hora
-        newEnsayo.Azimut    = ensayo.datosEntrada.rangoAzimut
-        newEnsayo.Elevacion = ensayo.datosEntrada.rangoElevacion
-        newEnsayo.Signal    = ensayo.datosSalida.signalStrength
-        dataParsed.push(newEnsayo)
-    })
-    
-    await res.status(200).send(dataParsed)
+    try {
+        const data = await db.query(
+            queries.getEnsayosWifi
+        )
+
+        let dataParsed = []
+        data.map((ensayo) => {
+            const newEnsayo = {}
+            newEnsayo.Usuario   = ensayo.idUsuario
+            newEnsayo.Fecha     = ensayo.Fecha
+            newEnsayo.Hora      = ensayo.Hora
+            newEnsayo.Azimut    = ensayo.datosEntrada.rangoAzimut
+            newEnsayo.Elevacion = ensayo.datosEntrada.rangoElevacion
+            newEnsayo.Signal    = ensayo.datosSalida.signalStrength
+            dataParsed.push(newEnsayo)
+        })
+
+        await res.status(200).send(dataParsed)
+    } catch (error) {
+        res.status(404).send("No hay ensayos realizados en este laboratorio!")
+    }
 }
 
 // -----------------------------------
@@ -86,18 +90,18 @@ wifiController.postEnsayoWifi = async (req, res) => {
 
             // switch (resArduino.data.Error) {
             //     case 0:
-                    db.query(
-                        queries.postEnsayoWifi,
-                        {
-                            replacements: {
-                                idUsuario: idUsuario,
-                                datosEntrada: JSON.stringify(datosEntrada),
-                                datosSalida: JSON.stringify(datosSalida),
-                                idLaboratorio: idLaboratorio
-                            }
-                        }
-                    )
-                    msg = "Laboratorio OK y datos guardados en base de datos"
+            db.query(
+                queries.postEnsayoWifi,
+                {
+                    replacements: {
+                        idUsuario:      idUsuario,
+                        datosEntrada:   JSON.stringify(datosEntrada),
+                        datosSalida:    JSON.stringify(datosSalida),
+                        idLaboratorio:  idLaboratorio
+                    }
+                }
+            )
+            msg = "Laboratorio OK y datos guardados en base de datos"
             //         break
             //     case 1:
             //         msg = "Error en el angulo limite de azimut"
@@ -110,11 +114,10 @@ wifiController.postEnsayoWifi = async (req, res) => {
             //         break
             // }
 
-            res.status(200).json({msg: msg})
-            // res.status(200).json({ msg: "Parámetros correctos. Guardado en DB" })
+            res.status(200).json("Parámetros correctos. Guardado en DB")
         } catch (error) {
             console.error("-> ERROR postEnsayoWifi:", error)
-            res.status(500).json({ msg: "Error en postEnsayoWifi!" })
+            res.status(500).json("Falló el ensayo Wifi!")
         }
     }
 }
