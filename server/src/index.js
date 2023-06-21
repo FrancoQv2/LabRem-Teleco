@@ -9,7 +9,7 @@ import morgan from "morgan"
 import cors from "cors"
 // import cookieParser from "cookie-parser"
 
-import { dbConnection } from "./db/dbconfig.js"
+import { dbConnection } from "./configs/db.config.js"
 
 import telecoRouter from "./routes/teleco.routes.js"
 

@@ -1,7 +1,7 @@
 import { db } from "../index.js"
 
-import { postArduino, getArduino } from "../lib/arduino.js"
-import { getStatsBullet } from "../lib/bullet.js";
+import { postArduino, getArduino } from "../utils/arduino.js"
+import { getStatsBullet } from "../utils/bullet.js";
 
 const idLaboratorio = 1
 
