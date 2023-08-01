@@ -58,6 +58,7 @@ telecoController.getLaboratorio = async (req, res) => {
                 }
             }
         )
+        console.log(data)
 
         if (!data.length) {
             await res.status(404).send("No existe el laboratorio buscado!")

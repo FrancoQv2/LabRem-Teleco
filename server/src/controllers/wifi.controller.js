@@ -60,7 +60,7 @@ wifiController.postEnsayoWifi = async (req, res) => {
         res.status(400)
             .send("Azimut incorrecta")
     } else {
-        // const statsBullet = await getStatsBullet()
+        const statsBullet = await getStatsBullet()
 
         const datosEntrada = {
             rangoElevacion: elevacion,
@@ -68,8 +68,8 @@ wifiController.postEnsayoWifi = async (req, res) => {
         }
 
         const datosSalida = {
-            // signalStrength: statsBullet.wireless.signal
-            signalStrength: -90
+            signalStrength: statsBullet.wireless.signal
+            // signalStrength: -90
         }
 
         // const resArduino = await getArduino()

@@ -3,20 +3,22 @@ services:
   db:
     container_name: labrem-apps-db-teleco
     image: mysql:8.0.30
-    restart: always
     environment:
       TZ: America/Buenos_Aires
-      MYSQL_DATABASE:       ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD:  ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER:           ${MYSQL_USER}
-      MYSQL_PASSWORD:       ${MYSQL_PASSWORD}
+      MYSQL_DATABASE:      ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER:          ${MYSQL_USER}
+      MYSQL_PASSWORD:      ${MYSQL_PASSWORD}
+    ports:
+      - ${MYSQL_PORT}:3306
+    restart: always
     volumes:
       - ./database/db.sql:/docker-entrypoint-initdb.d/a.sql:ro
       - ./database/db-triggers.sql:/docker-entrypoint-initdb.d/b.sql:ro
       - ./database/db-sp-laboratorios.sql:/docker-entrypoint-initdb.d/c.sql:ro
       - ./database/db-sp-ensayos.sql:/docker-entrypoint-initdb.d/d.sql:ro
-      - ./database/db-data.sql:/docker-entrypoint-initdb.d/e.sql:ro
-      - /home/labrem/volumes/db-teleco:/var/lib/mysql
+      # - ./database/db-data.sql:/docker-entrypoint-initdb.d/e.sql:ro
+      - teleco-db:/var/lib/mysql
     networks:
       labrem-network:
         aliases:
@@ -27,11 +29,15 @@ services:
     container_name: labrem-apps-server-teleco
     build:
       context: ./server
-      dockerfile: Dockerfile
       no_cache: true
-    restart: always
+      dockerfile_inline: |
+        FROM node:18.7.0
+        WORKDIR /usr/src/server
+        RUN npm install -g nodemon
+        EXPOSE 3000
+        CMD ["npm","run","dev"]
     environment:
-      NODE_ENV:   production
+      NODE_ENV:   development
       DB_HOST:    labrem-apps-db-teleco
       DB_DIALECT: mysql
       DB_USER:    ${MYSQL_USER}
@@ -40,8 +46,11 @@ services:
       DB_PORT:    3306
     ports:
       - ${SERVER_PORT}:3000
+    restart: always
     stdin_open: true
     tty: true
+    volumes:
+      - /home/francoq/labrem/teleco/server:/usr/src/server
     networks:
       labrem-network:
         aliases:
@@ -52,3 +61,6 @@ networks:
     driver: bridge
     ipam:
       driver: default
+volumes:
+  teleco-db:
+    name: teleco-db

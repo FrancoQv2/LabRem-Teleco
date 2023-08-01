@@ -11,10 +11,9 @@ ENV DB_DIALECT=mysql
 
 ENV DB_USER=root
 ENV DB_PASSWORD=123456
-
+ENV DB_NAME=LabRem_Teleco
 ENV DB_PORT=3306
 
-ENV DB_NAME=LabRem_Teleco
 
 RUN npm install -g nodemon
 
