@@ -17,7 +17,7 @@ services:
       - ./database/db-triggers.sql:/docker-entrypoint-initdb.d/b.sql:ro
       - ./database/db-sp-laboratorios.sql:/docker-entrypoint-initdb.d/c.sql:ro
       - ./database/db-sp-ensayos.sql:/docker-entrypoint-initdb.d/d.sql:ro
-      - /home/francoq/labrem/_volumes/db-teleco:/var/lib/mysql
+      - /home/labrem/_volumes/db-teleco:/var/lib/mysql
     networks:
       labrem-network:
         aliases:
