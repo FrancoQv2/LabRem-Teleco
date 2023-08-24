@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   db:
-    container_name: labrem-apps-db-teleco
+    container_name: labrem-apps-db-teleco-dev
     image: mysql:8.0.30
     environment:
       TZ: America/Buenos_Aires
@@ -22,11 +22,11 @@ services:
     networks:
       labrem-network:
         aliases:
-          - labrem-apps-db-teleco
+          - labrem-apps-db-teleco-dev
   server:
     depends_on:
       - db
-    container_name: labrem-apps-server-teleco
+    container_name: labrem-apps-server-teleco-dev
     build:
       context: ./server
       no_cache: true
@@ -38,7 +38,7 @@ services:
         CMD ["npm","run","dev"]
     environment:
       NODE_ENV:   development
-      DB_HOST:    labrem-apps-db-teleco
+      DB_HOST:    labrem-apps-db-teleco-dev
       DB_DIALECT: mysql
       DB_USER:    ${MYSQL_USER}
       DB_PASS:    ${MYSQL_PASSWORD}
@@ -54,7 +54,7 @@ services:
     networks:
       labrem-network:
         aliases:
-          - labrem-apps-server-teleco
+          - labrem-apps-server-teleco-dev
 networks:
   labrem-network:
     name: labrem-network

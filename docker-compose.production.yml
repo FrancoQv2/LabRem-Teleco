@@ -5,10 +5,10 @@ services:
     image: mysql:8.0.30
     environment:
       TZ: America/Buenos_Aires
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_DATABASE:      ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER:          ${MYSQL_USER}
+      MYSQL_PASSWORD:      ${MYSQL_PASSWORD}
     ports:
       - ${MYSQL_PORT}:3306
     restart: always
@@ -17,9 +17,7 @@ services:
       - ./database/db-triggers.sql:/docker-entrypoint-initdb.d/b.sql:ro
       - ./database/db-sp-laboratorios.sql:/docker-entrypoint-initdb.d/c.sql:ro
       - ./database/db-sp-ensayos.sql:/docker-entrypoint-initdb.d/d.sql:ro
-      - ./database/db-data.sql:/docker-entrypoint-initdb.d/e.sql:ro
-      - /home/labrem/volumes/db-teleco:/var/lib/mysql
-      - teleco-db:/var/lib/mysql
+      - /home/francoq/labrem/_volumes/db-teleco:/var/lib/mysql
     networks:
       labrem-network:
         aliases:
@@ -28,18 +26,30 @@ services:
     depends_on:
       - db
     container_name: labrem-apps-server-teleco
+    image: teleco-server:1.0
     build:
       context: ./server
-      dockerfile: Dockerfile
       no_cache: true
+      dockerfile: ../dockerfiles/production.Dockerfile
+      # dockerfile_inline: |
+      #   FROM node:18.7.0
+      #   WORKDIR /usr/src/server
+      #   COPY package.json .
+      #   COPY package-lock.json .
+      #   RUN npm ci --omit=dev
+      #   COPY . .
+      #   RUN apt update \
+      #       && apt install inetutils-ping
+      #   EXPOSE 3000
+      #   CMD ["npm","start"]
     environment:
-      NODE_ENV: production
-      DB_HOST: labrem-apps-db-teleco
+      NODE_ENV:   production
+      DB_HOST:    labrem-apps-db-teleco
       DB_DIALECT: mysql
-      DB_USER: ${MYSQL_USER}
-      DB_PASS: ${MYSQL_PASSWORD}
-      DB_NAME: ${MYSQL_DATABASE}
-      DB_PORT: 3306
+      DB_USER:    ${MYSQL_USER}
+      DB_PASS:    ${MYSQL_PASSWORD}
+      DB_NAME:    ${MYSQL_DATABASE}
+      DB_PORT:    3306
     ports:
       - ${SERVER_PORT}:3000
     restart: always
@@ -55,6 +65,3 @@ networks:
     driver: bridge
     ipam:
       driver: default
-volumes:
-  teleco-db:
-    name: teleco-db
