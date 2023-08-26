@@ -18,6 +18,10 @@ services:
       - ./database/db-sp-laboratorios.sql:/docker-entrypoint-initdb.d/c.sql:ro
       - ./database/db-sp-ensayos.sql:/docker-entrypoint-initdb.d/d.sql:ro
       - /home/labrem/_volumes/teleco-db:/var/lib/mysql
+    networks:
+      labrem-network:
+        aliases:
+          - labrem-apps-teleco-db
   server:
     depends_on:
       - db
@@ -49,3 +53,13 @@ services:
     restart: always
     stdin_open: true
     tty: true
+    networks:
+      labrem-network:
+        aliases:
+          - labrem-apps-teleco-server
+networks:
+  labrem-network:
+    name: labrem-network
+    driver: bridge
+    ipam:
+      driver: default
