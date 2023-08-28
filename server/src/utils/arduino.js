@@ -13,7 +13,7 @@ async function arduinoGET() {
     const headers = {
         'Content-Type': 'text/plain'
     }
-
+    console.log("--DENTRO DE ARDUINO GET");
     let response
     try {
         response = await axios.get(URL_ARDUINO, { headers, GET })
