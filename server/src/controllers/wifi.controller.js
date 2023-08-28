@@ -69,13 +69,12 @@ wifiController.postEnsayoWifi = async (req, res) => {
         try {
             let resPostArduino = await arduinoPOST(azimut, elevacion)
             // delay(2)
-            await console.log(resPostArduino.status)
-            await console.log(resPostArduino.data.mensaje)
-            
+            console.log(resPostArduino.status)
+            console.log(resPostArduino.data.mensaje)
             
             resArduino = await arduinoGET()
             // delay(2)
-            await console.log(resArduino);
+            console.log(resArduino);
 
             // const statusArduino = await arduinoGET()
 
@@ -100,14 +99,14 @@ wifiController.postEnsayoWifi = async (req, res) => {
             //         break
             // }
 
-            const statsBullet = await getStatsBullet()
+            // const statsBullet = await getStatsBullet()
 
             const datosSalida = {
-                signalStrength: statsBullet.wireless.signal
-                // signalStrength: -90
+                // signalStrength: statsBullet.wireless.signal
+                signalStrength: -90
             }
 
-            delay(1)
+            // delay(1)
 
             db.query(
                 queries.postEnsayoWifi,
