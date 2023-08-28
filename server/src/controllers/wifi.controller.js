@@ -65,6 +65,7 @@ wifiController.postEnsayoWifi = async (req, res) => {
             rangoElevacion: elevacion,
             rangoAzimut: azimut
         }
+        console.log("datos de entrada", datosEntrada);
         
         try {
             // let resPostArduino = await arduinoPOST(azimut, elevacion)
@@ -119,6 +120,7 @@ wifiController.postEnsayoWifi = async (req, res) => {
                 }
             )
             msg = "Laboratorio OK y datos guardados en base de datos"
+            console.log(msg);
 
             res.status(200).json("Parámetros correctos. Guardado en DB")
         } catch (error) {
