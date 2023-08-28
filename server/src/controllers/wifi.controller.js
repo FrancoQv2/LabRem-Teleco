@@ -67,9 +67,9 @@ wifiController.postEnsayoWifi = async (req, res) => {
         }
         
         try {
-            let resPostArduino = await arduinoPOST(azimut, elevacion)
-            // delay(2)
-            console.log(resPostArduino)
+            // let resPostArduino = await arduinoPOST(azimut, elevacion)
+            // // delay(2)
+            // console.log(resPostArduino)
             
             resArduino = await arduinoGET()
             // delay(2)
