@@ -40,6 +40,8 @@ async function arduinoPOST(azimut, elevacion) {
     })
 }
 
+export { arduinoGET, arduinoPOST }
+
 // (async () => {
 //     try {
 //         const stats = await getStatsBullet();
