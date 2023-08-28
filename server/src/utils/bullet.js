@@ -2,9 +2,9 @@ import axios from "axios"
 
 import { getCookieFromUrl, parseCookies } from "./cookies.js";
 
-const URL_BULLET = 'http://192.168.5.3'
-const BULLET_USER = 'ubnt'
-const BULLET_PASS = 'ubnt'
+const URL_BULLET = process.env.URL_BULLET
+const BULLET_USER = process.env.BULLET_USER
+const BULLET_PASS = process.env.BULLET_PASS
 
 async function getSessionId() {
     const cookies = await getCookieFromUrl(`${URL_BULLET}/login.cgi`)
