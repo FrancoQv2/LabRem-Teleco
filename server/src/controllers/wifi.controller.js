@@ -71,6 +71,7 @@ wifiController.postEnsayoWifi = async (req, res) => {
             // let resPostArduino = await arduinoPOST(azimut, elevacion)
             // // delay(2)
             // console.log(resPostArduino)
+            console.log("EN EL TRY");
             
             resArduino = await arduinoGET()
             // delay(2)
@@ -107,6 +108,7 @@ wifiController.postEnsayoWifi = async (req, res) => {
             }
 
             // delay(1)
+            console.log("ANTES DE DB QUERY");
 
             db.query(
                 queries.postEnsayoWifi,
