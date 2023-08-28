@@ -65,18 +65,18 @@ wifiController.postEnsayoWifi = async (req, res) => {
             rangoElevacion: elevacion,
             rangoAzimut: azimut
         }
-
-        let resArduino = await arduinoPOST(azimut, elevacion)
-        delay(2)
-        console.log(resArduino.status)
-        console.log(resArduino.data.mensaje)
         
-        
-        const resArduino = await arduinoGET()
-        delay(2)
-        console.log(resArduino);
-
         try {
+            let resArduino = await arduinoPOST(azimut, elevacion)
+            // delay(2)
+            await console.log(resArduino.status)
+            await console.log(resArduino.data.mensaje)
+            
+            
+            const resArduino = await arduinoGET()
+            // delay(2)
+            await console.log(resArduino);
+
             // const statusArduino = await arduinoGET()
 
             // console.log(statusArduino)
