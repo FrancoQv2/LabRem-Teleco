@@ -1,6 +1,7 @@
 import { db } from "../index.js"
+import { delay } from "./delay.js"
 
-import { postArduino, getArduino } from "../utils/arduino.js"
+import { arduinoPOST, arduinoGET } from "../utils/arduino.js"
 import { getStatsBullet } from "../utils/bullet.js";
 
 const idLaboratorio = 1
@@ -60,24 +61,22 @@ wifiController.postEnsayoWifi = async (req, res) => {
         res.status(400)
             .send("Azimut incorrecta")
     } else {
-        const statsBullet = await getStatsBullet()
-
         const datosEntrada = {
             rangoElevacion: elevacion,
             rangoAzimut: azimut
         }
 
-        const datosSalida = {
-            signalStrength: statsBullet.wireless.signal
-            // signalStrength: -90
-        }
-
-        // const resArduino = await getArduino()
-        // console.log("--asd")
+        // let resArduino = await arduinoPOST(azimut, elevacion)
         // console.log(resArduino.status)
+        // console.log(resArduino.data.mensaje)
+
+        // delay(2)
+
+        // const resArduino = await arduinoGET()
 
         try {
-            // const statusArduino = await getArduino()
+            // const statusArduino = await arduinoGET()
+
             // console.log(statusArduino)
             // if (statusArduino.data.Estado[2]) {
             //     console.log(statusArduino.data.Estado[2])
@@ -85,11 +84,29 @@ wifiController.postEnsayoWifi = async (req, res) => {
             //     console.log("Aún no terminó el ensayo!!")
             // }
 
-            // let resArduino = await postArduino(azimut, elevacion)
-            // console.log(resArduino.data.msg)
-
             // switch (resArduino.data.Error) {
             //     case 0:
+            //         break
+            //     case 1:
+            //         msg = "Error en el angulo limite de azimut"
+            //         break
+            //     case 2:
+            //         msg = "Error en el angulo limite de elevacion"
+            //         break
+            //     default:
+            //         msg = "Error de laboratorio incorrecto"
+            //         break
+            // }
+
+            const statsBullet = await getStatsBullet()
+
+            const datosSalida = {
+                signalStrength: statsBullet.wireless.signal
+                // signalStrength: -90
+            }
+
+            delay(1)
+
             db.query(
                 queries.postEnsayoWifi,
                 {
@@ -102,17 +119,6 @@ wifiController.postEnsayoWifi = async (req, res) => {
                 }
             )
             msg = "Laboratorio OK y datos guardados en base de datos"
-            //         break
-            //     case 1:
-            //         msg = "Error en el angulo limite de azimut"
-            //         break
-            //     case 2:
-            //         msg = "Error en el angulo limite de elevacion"
-            //         break
-            //     default:
-            //         msg = "Error de laboratorio incorrecto"
-            //         break
-            // }
 
             res.status(200).json("Parámetros correctos. Guardado en DB")
         } catch (error) {
