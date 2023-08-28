@@ -10,7 +10,7 @@ async function arduinoGET(azimut, elevacion) {
     const curlGET = `curl -X GET ${URL_ARDUINO} -H 'Content-Type: text/plain' -d '${GET}'`
 
     return new Promise((resolve, reject) => {
-        exec(curlPOST, (error, stdout, stderr) => {
+        exec(curlGET, (error, stdout, stderr) => {
             if (error) {
                 reject(error)
                 return
