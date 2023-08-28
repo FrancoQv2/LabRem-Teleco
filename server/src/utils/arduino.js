@@ -13,6 +13,7 @@ async function arduinoGET() {
     const headers = {
         'Content-Type': 'text/plain'
     }
+    console.log(URL_ARDUINO);
     console.log("--DENTRO DE ARDUINO GET");
     let response
     try {
@@ -21,6 +22,7 @@ async function arduinoGET() {
     } catch (error) {
         console.error('Error:', error.message)
     }
+    console.log(response);
     return response
 }
 
