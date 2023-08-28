@@ -1,58 +1,51 @@
 import axios from "axios"
 import { delay } from "./delay.js"
+import { exec } from 'child_process'
 
-// const URL_ARDUINO = "http://192.168.100.75:3031/api/control/arduino"
-// const URL_ARDUINO = "http://172.23.12.125:5033" // IP de wsl vista desde dev-teleco
-const URL_ARDUINO = "http://172.25.64.1:5033" // IP de wsl vista desde dev-teleco (cat /etc/resolv.conf en wsl)
+const URL_ARDUINO = process.env.URL_ARDUINO
 
-export async function postArduino(azimut, elevacion) {
-    let respuestaPost
+const GET  = 'GET /  HTTP/1.1'
+const POST = 'POST / HTTP/1.1'
 
-    const body = {
-        "Estado": [2, true, true],          // [ Laboratorio (Teleco), Sub Laboratorio (WiFi), Inicio del experimento ]
-        "Analogico": [azimut, elevacion]
+// curl -X GET http://10.0.255.110 -H 'Content-Type: text/plain' -d 'GET /  HTTP/1.1'
+async function arduinoGET() {
+    // const curlGET = `curl -X GET ${URL_ARDUINO} -H 'Content-Type: text/plain' -d '${GET} ${body}'`
+    const headers = {
+        'Content-Type': 'text/plain'
     }
 
-    try {
-        respuestaPost = axios.post(`${URL_ARDUINO}/api/teleco`, body)
-    } catch (error) {
-        console.log(error);
-    }
-    
-    return respuestaPost
-}
-
-export async function getArduino() {
     let response
     try {
-        response = await axios.get(`${URL_ARDUINO}/api/teleco`)
+        response = await axios.get(URL_ARDUINO, { headers, GET })
+        console.log(response.data)
     } catch (error) {
-        console.log(error)
+        console.error('Error:', error.message)
     }
-
     return response
 }
 
-// export async function queryArduino(azimut, elevacion) {
+// curl -X POST http://10.0.255.110 -H 'Content-Type: text/plain' -d 'POST / HTTP/1.1 {"Estado": [2,true,true],"Analogico": [15,15]}'
+async function arduinoPOST(azimut, elevacion) {
+    const body = `{"Estado": [2,true,true],"Analogico": [${azimut},${elevacion}]}`
+    const curlPOST = `curl -X POST ${URL_ARDUINO} -H 'Content-Type: text/plain' -d '${POST} ${body}'`
 
-//     const body = {
-//         "Estado": [2, true, true],
-//         "Analogico": [azimut, elevacion]
+    return new Promise((resolve, reject) => {
+        exec(curlPOST, (error, stdout, stderr) => {
+            if (error) {
+                reject(error)
+                return
+            }
+            resolve(stdout)
+        })
+    })
+}
+
+// (async () => {
+//     try {
+//         const stats = await getStatsBullet();
+//         const statsJSON = JSON.stringify(stats, null, 2); // Convierte a JSON con formato legible
+//         console.log(statsJSON);
+//     } catch (error) {
+//         console.error('Error:', error);
 //     }
-
-//     let respuestaGet
-//     let msg = ''
-
-//     const respuestaPost = postArduino(azimut, elevacion)
-//     let i = 0
-
-//     do {
-//         respuestaGet = await axios.get(`${URL_ARDUINO}/api/teleco`)
-//         await delay(3000)
-//         i = i + 1
-//     } while (respuestaGet.data.Estado[2])
-
-//     console.log(respuestaGet.data.Error)
-
-//     return respuestaGet
-// }
+// })();
