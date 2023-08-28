@@ -1,5 +1,5 @@
 import { db } from "../index.js"
-import { delay } from "./delay.js"
+import { delay } from "../utils/delay.js"
 
 import { arduinoPOST, arduinoGET } from "../utils/arduino.js"
 import { getStatsBullet } from "../utils/bullet.js";
