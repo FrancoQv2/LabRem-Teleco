@@ -54,10 +54,10 @@ wifiController.postEnsayoWifi = async (req, res) => {
     const { idUsuario, elevacion, azimut } = req.body
     let msg
 
-    if (elevacion < 0 || elevacion > 90) {
+    if (elevacion < 0 || elevacion > 180) {
         res.status(400)
             .send("Elevación incorrecta")
-    } else if (azimut < 0 || azimut > 90) {
+    } else if (azimut < 0 || azimut > 180) {
         res.status(400)
             .send("Azimut incorrecta")
     } else {
@@ -98,11 +98,11 @@ wifiController.postEnsayoWifi = async (req, res) => {
             //         break
             // }
 
-            // const statsBullet = await getStatsBullet()
+            const statsBullet = await getStatsBullet()
 
             const datosSalida = {
-                // signalStrength: statsBullet.wireless.signal
-                signalStrength: -90
+                signalStrength: statsBullet.wireless.signal
+                // signalStrength: -90
             }
 
             // delay(1)
