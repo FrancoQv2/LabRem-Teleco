@@ -50,7 +50,7 @@ SALIR: BEGIN
 			datosSalida
 		FROM Ensayos
 		WHERE idLaboratorio = pIdLaboratorio 
-		ORDER BY fechaHora ASC;
+		ORDER BY fechaHora DESC;
 	END IF;
 END//
 DELIMITER ;
@@ -78,7 +78,8 @@ SALIR: BEGIN
 			datosEntrada, 
 			datosSalida 
 		FROM Ensayos 
-		WHERE idLaboratorio = pIdLaboratorio AND idUsuario = pIdUsuario;
+		WHERE idLaboratorio = pIdLaboratorio AND idUsuario = pIdUsuario
+        ORDER BY fechaHora DESC;
     END IF;
 END//
 DELIMITER ;
