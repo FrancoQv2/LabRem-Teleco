@@ -3,10 +3,12 @@ import express from "express"
 import { telecoController } from "../controllers/teleco.controller.js"
 import { radioController } from "../controllers/radio.controller.js"
 import { wifiController } from "../controllers/wifi.controller.js"
+import { bulletController } from "../controllers/bullet.controller.js"
 
-const { postLaboratorio, getLaboratorios, getLaboratorio, getEnsayosUsuario, deleteEnsayo, deleteLaboratorio, getEnsayos, updateLaboratorio } = telecoController;
+const { postLaboratorio, getLaboratorios, getLaboratorio, getEnsayosUsuario, deleteEnsayo, deleteLaboratorio, getEnsayos, updateLaboratorio } = telecoController
 const { postEnsayoRadio, getEnsayosRadio } = radioController
 const { postEnsayoWifi, getEnsayosWifi } = wifiController
+const { getSignalBullet } = bulletController
 
 const telecoRouter = express.Router()
 
@@ -21,6 +23,9 @@ telecoRouter.route("/")
 telecoRouter.route("/wifi")
     .get(getEnsayosWifi)
     .post(postEnsayoWifi)
+
+telecoRouter.route("/wifi/bullet")
+    .get(getSignalBullet)
 
 telecoRouter.route("/radio")
     .get(getEnsayosRadio)

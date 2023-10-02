@@ -57,10 +57,7 @@ services:
           - labrem-apps-server-teleco-dev
 networks:
   labrem-network:
-    name: labrem-network
-    driver: bridge
-    ipam:
-      driver: default
+    external: true
 volumes:
   teleco-db:
     name: teleco-db
