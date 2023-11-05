@@ -1,54 +1,33 @@
 version: '3.8'
 services:
-  db:
-    container_name: labrem-apps-db-teleco
-    image: mysql:8.0.30
-    restart: always
-    environment:
-      TZ: America/Buenos_Aires
-      MYSQL_DATABASE:       ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD:  ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER:           ${MYSQL_USER}
-      MYSQL_PASSWORD:       ${MYSQL_PASSWORD}
-    volumes:
-      - ./database/db.sql:/docker-entrypoint-initdb.d/a.sql:ro
-      - ./database/db-triggers.sql:/docker-entrypoint-initdb.d/b.sql:ro
-      - ./database/db-sp-laboratorios.sql:/docker-entrypoint-initdb.d/c.sql:ro
-      - ./database/db-sp-ensayos.sql:/docker-entrypoint-initdb.d/d.sql:ro
-      - ./database/db-data.sql:/docker-entrypoint-initdb.d/e.sql:ro
-      - /home/labrem/volumes/db-teleco:/var/lib/mysql
-    networks:
-      labrem-network:
-        aliases:
-          - labrem-apps-db-teleco
   server:
-    depends_on:
-      - db
-    container_name: labrem-apps-server-teleco
+    container_name: labrem-apps-teleco-server
+    image: labrem-apps-teleco-server:${VERSION}
     build:
-      context: ./server
       dockerfile: Dockerfile
       no_cache: true
-    restart: always
     environment:
-      NODE_ENV:   production
-      DB_HOST:    labrem-apps-db-teleco
-      DB_DIALECT: mysql
-      DB_USER:    ${MYSQL_USER}
-      DB_PASS:    ${MYSQL_PASSWORD}
-      DB_NAME:    ${MYSQL_DATABASE}
-      DB_PORT:    3306
+      TZ:           America/Buenos_Aires
+      NODE_ENV:     production
+      DB_DIALECT:   mysql
+      DB_HOST:      ${MYSQL_HOST}
+      DB_PORT:      3306
+      DB_USER:      ${MYSQL_USER}
+      DB_PASS:      ${MYSQL_PASSWORD}
+      DB_NAME:      ${MYSQL_DATABASE}
+      URL_ARDUINO:  ${URL_ARDUINO}
     ports:
       - ${SERVER_PORT}:3000
+    restart: always
     stdin_open: true
     tty: true
+    volumes:
+      - ${PATH_CERT}:/usr/src/server/certs/cert.pem
+      - ${PATH_PRIVKEY}:/usr/src/server/certs/privkey.pem
     networks:
       labrem-network:
         aliases:
-          - labrem-apps-server-teleco
+          - labrem-apps-teleco-server
 networks:
   labrem-network:
-    name: labrem-network
-    driver: bridge
-    ipam:
-      driver: default
+    external: true
