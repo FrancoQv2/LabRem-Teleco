@@ -17,7 +17,7 @@ services:
       - ./database/db-triggers.sql:/docker-entrypoint-initdb.d/b.sql:ro
       - ./database/db-sp-laboratorios.sql:/docker-entrypoint-initdb.d/c.sql:ro
       - ./database/db-sp-ensayos.sql:/docker-entrypoint-initdb.d/d.sql:ro
-      - /home/labrem/_volumes/teleco-db:/var/lib/mysql
+      - ${PATH_DB_VOLUME}:/var/lib/mysql
     networks:
       labrem-network:
         aliases:
@@ -29,17 +29,10 @@ services:
     image: labrem-apps-teleco-server:${VERSION}
     build:
       context: ./server
+      dockerfile: ./dockerfiles/production.Dockerfile
       no_cache: true
-      dockerfile_inline: |
-        FROM node:18.7.0
-        WORKDIR /usr/src/server
-        COPY package.json .
-        COPY package-lock.json .
-        RUN npm ci --omit=dev
-        COPY . .
-        EXPOSE 3000
-        CMD ["npm","start"]
     environment:
+      TZ:           America/Buenos_Aires
       NODE_ENV:     production
       DB_HOST:      labrem-apps-teleco-db
       DB_DIALECT:   mysql
@@ -54,8 +47,8 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - /home/labrem/certs/cert.pem:/usr/src/server/src/certs/cert.pem
-      - /home/labrem/certs/privkey.pem:/usr/src/server/src/certs/privkey.pem
+      - ${PATH_CERT}:/usr/src/server/certs/cert.pem
+      - ${PATH_PRIVKEY}:/usr/src/server/certs/privkey.pem
     networks:
       labrem-network:
         aliases:
