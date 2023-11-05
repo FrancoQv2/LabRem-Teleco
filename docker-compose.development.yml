@@ -1,52 +1,63 @@
 version: '3.8'
 services:
   db:
-    container_name: teleco-db
+    container_name: labrem-apps-teleco-db-dev
     image: mysql:8.0.30
-    restart: unless-stopped
-    env_file: ./.env
     environment:
-      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - MYSQL_DATABASE=$MYSQLDB_DATABASE
-      - TZ=America/Buenos_Aires
+      TZ: America/Buenos_Aires
+      MYSQL_DATABASE:      ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER:          ${MYSQL_USER}
+      MYSQL_PASSWORD:      ${MYSQL_PASSWORD}
     ports:
-      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+      - ${MYSQL_PORT}:3306
+    restart: always
     volumes:
-      - ../volumenes/teleco-db:/var/lib/mysql
-      - ./database/db-teleco.sql:/var/lib/bdmysql/db-teleco.sql
-      # - /home/labrem/volumenes/teleco-db:/var/lib/mysql
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
+      - ./database/db.sql:/docker-entrypoint-initdb.d/a.sql:ro
+      - ./database/db-triggers.sql:/docker-entrypoint-initdb.d/b.sql:ro
+      - ./database/db-sp-laboratorios.sql:/docker-entrypoint-initdb.d/c.sql:ro
+      - ./database/db-sp-ensayos.sql:/docker-entrypoint-initdb.d/d.sql:ro
+      - teleco-db:/var/lib/mysql
     networks:
-      labrem:
+      labrem-network:
         aliases:
-          - teleco-db
+          - labrem-apps-teleco-db-dev
   server:
     depends_on:
       - db
-    container_name: teleco-server
-    build: ./server
-    restart: unless-stopped
-    env_file: ./.env
-    ports:
-      - $SERVER_LOCAL_PORT:$SERVER_DOCKER_PORT
+    container_name: labrem-apps-teleco-server-dev
+    build:
+      context: ./server
+      no_cache: true
+      dockerfile_inline: |
+        FROM node:18.18
+        WORKDIR /usr/src/server
+        RUN npm install -g nodemon
+        EXPOSE 3000
+        CMD ["npm","run","dev"]
     environment:
-      - DB_HOST=$DB_HOST
-      - DB_DIALECT=$DB_DIALECT
-      - SERVER_PORT=$SERVER_DOCKER_PORT
-      - DB_USER=$MYSQLDB_USER
-      - DB_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - DB_NAME=$MYSQLDB_DATABASE
-      - DB_PORT=$MYSQLDB_DOCKER_PORT
+      TZ:         America/Buenos_Aires
+      NODE_ENV:   development
+      DB_HOST:    labrem-apps-teleco-db-dev
+      DB_DIALECT: mysql
+      DB_USER:    ${MYSQL_USER}
+      DB_PASS:    ${MYSQL_PASSWORD}
+      DB_NAME:    ${MYSQL_DATABASE}
+      DB_PORT:    3306
+    ports:
+      - ${SERVER_PORT}:3000
+    restart: always
     stdin_open: true
     tty: true
+    volumes:
+      - ./server:/usr/src/server
     networks:
-      labrem:
+      labrem-network:
         aliases:
-          - teleco-server
+          - labrem-apps-teleco-server-dev
 networks:
-  labrem:
-    name: labrem-net
-    driver: bridge
-    ipam:
-      driver: default
+  labrem-network:
+    external: true
+volumes:
+  teleco-db:
+    name: teleco-db
